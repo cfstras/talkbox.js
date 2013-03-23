@@ -34,6 +34,7 @@ io.sockets.on('connection', function (socket) {
 		if(data.secret == null) {
 			newAuth(client, socket);
 		} else {
+			client.name = data.name;
 			var auth = findId(auths, data.secret);
 			if(auth != null) {
 				client.name = data.name;
@@ -82,11 +83,7 @@ io.sockets.on('connection', function (socket) {
 	});
 	socket.on('disconnect', function() {
 		console.log('dc: '+client.name+' #'+client.id);
-		for(i in clients) {
-			if(clients[i]==client) {
-				clients.splice(i,1);
-			}
-		}
+		delete clients[clients.indexOf(client)]
 		sendAll('msg',{
 			text: 'user ' + client.name
 			+ ' left channel.',

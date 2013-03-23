@@ -74,6 +74,7 @@ socket.on('err', function(data) {
 });
 delUser = function(user) {
 	console.log('dc: '+user.name);
+	delete userlist[userlist.indexOf(user)];
 	$('#'+user.id).animate({
 		opacity: 0
 	},200).slideUp(200,function() {
