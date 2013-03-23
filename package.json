@@ -1,0 +1,35 @@
+{
+	"name": "talkbox",
+	"description": "A minimalistic webchat",
+	"version": "0.1.0-alpha",
+	"keywords": ["talkbox","talkbox.js","cfstras","chat","jquery","connect"],
+	"homepage": "https://github.com/cfstras/talkbox.js",
+	"bugs": "https://github.com/cfstras/talkbox.js/issues",
+	"readmeFilename": "Readme.md",
+	"author": {
+			"name": "cfstras",
+			"email": "claus@strasburger.de",
+			"url": "http://about.me/cfstras"
+		},
+	"contributors": [],
+	"license" : "LGPLv3",
+	"repository" : {
+		"type" : "git",
+		"url" : "http://github.com/cfstras/talkbox.js.git"
+	},
+	"files": [
+		"static/client.css",
+		"static/client.js",
+		"static/index.html",
+		"static/util.js",
+		"LICENSE",
+		"server.js",
+		"package.json"
+	],
+	"main": "talkbox.js",
+	"dependencies": {
+		"socket.io": "",
+		"connect": ""
+	},
+	"scripts": {"start": "node talkbox.js"}
+}

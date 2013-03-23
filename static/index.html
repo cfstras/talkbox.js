@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+<script src="/socket.io/socket.io.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="client.css">
+<script src="/util.js"></script>
+<script src="/client.js"></script>
+</head>
+<body>
+<div id="wrap">
+	<!--header here-->
+	<section id="middle">
+		<aside id="userlist"><div class="inner"></div></aside>
+		<div id="msgs"><div id="inner"></div></div>
+		<div id="input">
+			<form onSubmit="send();return false;" action="">
+				<div class="inner">
+				<textarea id="inputbox" required="required"
+					placeholder="type message here..."></textarea>
+				<button type="submit">Go</button>
+				</div>
+			</form>
+		</div>
+	</section>
+	<!--footer here-->
+</div>
+</body>
+</html>

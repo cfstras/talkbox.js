@@ -1,0 +1,123 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+header, nav, section, article, aside, footer {
+	display: block;
+}
+html {
+	height: 100%;
+}
+body {
+	height: 100%;
+}
+.message {
+	background-color: #eee;
+	border-radius: 0.7em;
+	min-height: 1em;
+	margin: 0.5em 1em 0em 1em;
+	padding: 0.2em 1em 0.35em 1em;
+	word-wrap: break-word;
+	overflow: hidden;
+}
+.message .name {
+	float: left;
+	color: #888;
+	padding-right: 0.3em;
+}
+.message .server {
+	color: rgb(197, 75, 75);
+}
+.message .text {
+	float: left;
+	word-wrap: break-word;
+	max-width: 100%;
+}
+.message .right {
+	float: right;
+}
+div#wrap {
+	height: 100%;
+	width: 100%;
+	min-width: 480px;
+}
+section#middle {
+	width: 100%;
+	height: 100%;
+	position: relative;
+}
+section#middle:after {
+	content: '';
+	clear: both;
+	display: table;
+}
+div#msgs {
+	overflow-y: scroll;
+	height: 90%;
+	background: #D4D4D4;
+}
+div#msgs #inner {
+	
+}
+div#msgs:after {
+	clear:both;
+}
+aside#userlist {
+	width: 20em;
+    float: right;
+	position: relative;
+	background: #D4D4D4;
+	height: 100%;
+	overflow-x: auto;
+	overflow-y: scroll;
+}
+aside#userlist .inner {
+	padding: 0.5em 0.3em 0.5em 0.3em;
+}
+aside#userlist span.user {
+	background-color: #eee;
+	border-radius: 0.7em;
+	min-height: 1em;
+	margin: 0.5em 1em 0em 1em;
+	padding: 0.1em 1em 0.2em 1em;
+	word-wrap: break-word;
+	display: block;
+}
+#input {
+	height: 10%;
+	background: #D4D4D4;
+	margin-right: 20em;
+	display: block;
+}
+#input form {
+	height: 100%;
+	overflow: hidden;
+}
+#input .inner {
+	padding: 0.3em 0.3em 0.1em 0.3em;
+	overflow: hidden;
+	height: 100%;
+}
+#input form #inputbox {
+	-webkit-box-sizing: border-box;
+	   -moz-box-sizing: border-box;
+        -ms-box-sizing: border-box;
+         -o-box-sizing: border-box;
+            box-sizing: border-box;
+	width: 95%;
+	float: left;
+	height: 100%;
+	resize: none;
+	padding: 0.3em;
+}
+#input form button {
+	-webkit-box-sizing: border-box;
+	   -moz-box-sizing: border-box;
+        -ms-box-sizing: border-box;
+         -o-box-sizing: border-box;
+            box-sizing: border-box;
+	float: right;
+	height: 100%;
+	min-width: 2em;
+	width: 5%;
+}
