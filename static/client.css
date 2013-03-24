@@ -10,6 +10,7 @@ html {
 }
 body {
 	height: 100%;
+	font-family: sans-serif;
 }
 .message {
 	background-color: #eee;
@@ -21,7 +22,7 @@ body {
 	overflow: hidden;
 }
 .message .name {
-	float: left;
+	/*float: left;*/
 	color: #888;
 	padding-right: 0.3em;
 }
@@ -29,12 +30,17 @@ body {
 	color: rgb(197, 75, 75);
 }
 .message .text {
-	float: left;
+	/*float: left;*/
 	word-wrap: break-word;
 	max-width: 100%;
 }
+.message .text pre {
+	display: inline;
+	background: #ddd;
+}
 .message .right {
 	float: right;
+	color: #888;
 }
 div#wrap {
 	height: 100%;

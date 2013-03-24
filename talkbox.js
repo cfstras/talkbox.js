@@ -9,6 +9,11 @@ var connect = require('connect'),
 io.set('log level', 1);
 app.listen(80);
 
+var name_regex = /^[A-Za-zäöü0-9-_\.:]{3,20}$/;
+var name_symbols = 'A-Z a-z äöü 0-9-_\.:';
+var name_minLen = 3;
+var name_maxLen = 20;
+
 var clients = [];
 var auths = [];
 
@@ -56,7 +61,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on('ren', function(data) {
 		data.name = data.name.trim()
 			.replace(/<.*>/gm,"");
-		if(/^[A-Za-z0-9-_\.:]{3,}$/.test(data.name)) {
+		if(name_regex.test(data.name)) {
 			var old = client.name;
 			console.log(old+' rename ->'+data.name);
 			client.name = data.name;
@@ -76,7 +81,8 @@ io.sockets.on('connection', function (socket) {
 		} else {
 			socket.emit('err', {
 				type: 'name',
-				text: 'Invalid nickname format: '+data.name,
+				text: 'Invalid nickname format, allowed symbols: '
+				+ '<pre>'+name_symbols+'</pre>, length '+name_minLen+' - '+name_maxLen,
 				date: new Date()
 			});
 		}
