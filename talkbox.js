@@ -89,7 +89,7 @@ io.sockets.on('connection', function (socket) {
 	});
 	socket.on('disconnect', function() {
 		console.log('dc: '+client.name+' #'+client.id);
-		delete clients[clients.indexOf(client)]
+		clients.splice(clients.indexOf(client),1)
 		sendAll('msg',{
 			text: 'user ' + client.name
 			+ ' left channel.',
