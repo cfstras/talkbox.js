@@ -4,7 +4,9 @@ var connect = require('connect'),
 	io = require('socket.io').listen(app),
     fs = require('fs'),
     repl = require('repl'),
-    crypto = require('crypto')
+    crypto = require('crypto'),
+	check = require('validator').check,
+    sanitize = require('validator').sanitize
 
 io.set('log level', 1);
 app.listen(80);
@@ -147,8 +149,8 @@ var makeMsg = function(client, data) {
 		text: data.text,
 		date: new Date(),
 	};
-	m.text = m.text.trim()
-		.replace(/<.*>/gmi,"")
+	m.text = sanitize(m.text.trim())
+		.escape()
 		.replace(/(\r\n|\n|\r)/gm, '<br />\n');
 	return m;
 };

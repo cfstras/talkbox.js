@@ -121,13 +121,18 @@ send = function() {
 	} else {
 		socket.emit('msg', {text: text});
 	}
+	//inp.prop('disabled',true);
+	//setTimeout(function() {
+	//	inp.prop('disabled',false);
+	//},100);
 };
 $(document).ready(function() {
-	$('#inputbox').keyup(function(event) {
+	$('#inputbox').keydown(function(event) {
 		//console.log('shift: '+event.shiftKey+' ctrl: '+event.ctrlKey+' which: '+event.which);
 		if(event.keyCode === 13
 			&& !(event.ctrlKey || event.shiftKey)) {
 			send();
+			return false;
 		} else if((event.ctrlKey || event.shiftKey)
 			&& (event.keyCode === 13
 			|| event.keyCode == 10) ) {
