@@ -23,8 +23,10 @@
 		"static/index.html",
 		"static/util.js",
 		"LICENSE",
-		"server.js",
-		"package.json"
+		".gitignore",
+		"talkbox.js",
+		"package.json",
+		"Readme.md"
 	],
 	"main": "talkbox.js",
 	"dependencies": {
