@@ -1,11 +1,19 @@
 
-findId = function(arr,id) {
+findById = function(arr,id) {
 	for(i in arr) {
 		if(id == arr[i].id) {
 			return arr[i];
 		}
 	}
 	return null;
+};
+findIndexById = function(arr,id) {
+	for(i in arr) {
+		if(id == arr[i].id) {
+			return i;
+		}
+	}
+	return -1;
 };
 
 jQuery.fn.extend({

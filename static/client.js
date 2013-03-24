@@ -21,20 +21,19 @@ addMessage = function(data) {
 	var date = new Date(data.date);
 	var d = $('<div class="message'
 		+ '" style="opacity: 0;">'
+		
 		+ '<span class="name'+(data.server?' server':'') + '">'
-		+ data.name
-		+ ':</span><span class="right">'
-		+ date.toLocaleTimeString()
-		+ '</span><span class="text">'
-		+ data.text + '</span>'
+		+ data.name + ':</span>'
+		+ '<span class="text">' + data.text + '</span>'
+		+ '<span class="right">' + date.toLocaleTimeString() + '</span>'
 		+ '</div>')
 		.appendTo('#msgs #inner')
 		.animate({
 			opacity: 1
-		}, 200);
+		}, 150);
 	$('#msgs').animate({
 		scrollTop: $('#msgs #inner').height()
-	},300);
+	},150);
 	return d;
 };
 socket.on('userlist', function (data) {
@@ -43,12 +42,15 @@ socket.on('userlist', function (data) {
 });
 setUserlist = function(data) {
 	$('#userlist .inner').fadeIn(50);
-	console.log('userlist:'+data);
 	userlist = data;
-	$('#userlist .inner .name').each(function(i, el) {
-		user = find(userlist, el.id);
+	$('#userlist .inner .user').each(function(i, el) {
+		user = findById(userlist, el.id);
 		if (user === null) {
-			delUser(el);
+			$(this).animate({
+				opacity: 0
+			},200).slideUp(200,function() {
+				$('#userlist .inner .user:hidden').remove();
+			});
 		}
 	});
 	for(i in userlist) {
@@ -72,16 +74,16 @@ socket.on('err', function(data) {
 	data.name = 'server';
 	addMessage(data);
 });
-delUser = function(user) {
+socket.on('userleave', function(user) {
 	console.log('dc: '+user.name);
-	userlist.splice(userlist.indexOf(user),1);
-	$('#'+user.id).animate({
-		opacity: 0
-	},200).slideUp(200,function() {
-		$('#userlist .inner .user:hidden').remove();
-	});
-}
-socket.on('userleave', delUser);
+	var index = findIndexById(userlist, user.id);
+	if(index != -1) {
+		userlist.splice(index,1);
+	} else {
+		console.info('userleave: '+user+', not found in list'+userlist);
+	}
+	setUserlist(userlist)
+});
 socket.on('userjoin', function(data) {
 	userlist.push(data);
 	setUserlist(userlist);
