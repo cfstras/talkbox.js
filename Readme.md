@@ -8,7 +8,7 @@ But: It's super fast to deploy, has a minimal footprint and you might be able to
 
 Demo
 ----
-An instance running on nodester: http://talkbox.eu01.aws.af.cm/
+An instance running: http://talkbox.q1cc.net
 
 Usage
 -----
