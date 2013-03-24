@@ -6,6 +6,10 @@ Currently, there isn't any spam filtering, also nobody claims it's secure.
 
 But: It's super fast to deploy, has a minimal footprint and you might be able to learn something when looking at it.
 
+Demo
+----
+An instance running on nodester: http://talkbox.eu01.aws.af.cm/
+
 Usage
 -----
 It couldn't be simpler!
