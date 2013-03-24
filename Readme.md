@@ -10,6 +10,13 @@ Usage
 -----
 It couldn't be simpler!
 
+**with npm**
+
+	npm install talkbox
+	npm start talkbox
+
+**from git**
+
 	git clone http://github.com/cfstras/talkbox.js.git
 	cd talkbox.js
 	npm install

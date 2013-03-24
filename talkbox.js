@@ -17,20 +17,9 @@ var name_maxLen = 20;
 var clients = [];
 var auths = [];
 
-function handler (req, res) {
-  fs.readFile(__dirname + '/index.html',
-  function (err, data) {
-    if (err) {
-      res.writeHead(500);
-      return res.end('Error loading index.html');
-    }
-
-    res.writeHead(200);
-    res.end(data);
-  });
-}
-
 io.sockets.on('connection', function (socket) {
+	console.info('incoming connection from '
+		+ addr2string(socket.handshake.address));
 	var client = {
 		id: socket.id,
 		sock: socket,
@@ -46,7 +35,8 @@ io.sockets.on('connection', function (socket) {
 				auth.name = data.name;
 				welcome(client, auth, socket);
 			} else {
-				console.log('auth '+data.secret+' for user '+data.name+' not found');
+				console.info('auth '+data.secret.substring(0,7)
+				 + '.. for user '+data.name+' not found');
 				newAuth(client, socket)
 			}
 		}
@@ -63,21 +53,23 @@ io.sockets.on('connection', function (socket) {
 			.replace(/<.*>/gm,"");
 		if(name_regex.test(data.name)) {
 			var old = client.name;
-			console.log(old+' rename ->'+data.name);
+			console.info('user rename: '+old+' -> '+data.name);
 			client.name = data.name;
 			client.auth.name = client.name;
-			sendAll('ren', {
-				id: client.id,
-				name: client.name,
-				msg: {
-					type: 'ren',
-					name: 'server',
-					server: true,
-					text: old + ' is now known as '
-						+ client.name,
-					date: new Date()
-				}
-			});
+			if(client.auth != null) {
+				sendAll('ren', {
+					id: client.id,
+					name: client.name,
+					msg: {
+						type: 'ren',
+						name: 'server',
+						server: true,
+						text: old + ' is now known as '
+							+ client.name,
+						date: new Date()
+					}
+				});
+			}
 		} else {
 			socket.emit('err', {
 				type: 'name',
@@ -88,17 +80,21 @@ io.sockets.on('connection', function (socket) {
 		}
 	});
 	socket.on('disconnect', function() {
-		console.log('dc: '+client.name+' #'+client.id);
-		clients.splice(clients.indexOf(client),1)
-		sendAll('msg',{
-			text: 'user ' + client.name
-			+ ' left channel.',
-			name: 'server',
-			server: true,
-			date: new Date()});
-		sendAll('userleave', {
-			id: client.id,
-			name: client.name});
+		console.info('disconnect: from '
+			+ addr2string(socket.handshake.address));
+		var i = clients.indexOf(client)
+		if(i != -1) {
+			clients.splice(i,1)
+			sendAll('msg',{
+				text: 'user ' + client.name
+				+ ' left channel.',
+				name: 'server',
+				server: true,
+				date: new Date()});
+			sendAll('userleave', {
+				id: client.id,
+				name: client.name});
+		} // else: he was not authed.
 	});
 	
 });
@@ -108,20 +104,22 @@ var newAuth = function(client, socket) {
 		var sec = buf.toString('hex');
 		var auth = {
 			id: sec,
-			name: client.name,
-			login: new Date()
+			name: client.name
 		};
+		console.info('user '+auth.name
+			+ ' gets new auth ' + sec.substring(0,7) + '..');
 		auths.push(auth);
 		welcome(client, auth, socket);
 	});
 };
 
 var welcome = function(client, auth, socket) {
-	client.auth = auth;
-	auth.login = new Date();
 	sendAll('userjoin',prepareUserToSend(client));
+	auth.login = new Date();
+	client.auth = auth;
 	clients.push(client);
-	console.log('welcome '+auth.name);
+	console.info('user '+auth.name+' joined from '
+		+ addr2string(socket.handshake.address));
 	socket.emit('welcome', {
 		id: socket.id,
 		secret: auth.id,
@@ -174,7 +172,6 @@ var prepareUserToSend = function(client) {
 };
 
 var sendUserlist = function(socket) {
-	
 	clients[i].sock.emit('userlist', makeUserlist());
 };
 
@@ -187,9 +184,13 @@ var findId = function(arr,id) {
 	return null;
 };
 
+var addr2string = function(addr) {
+	return addr.address+':'+addr.port;
+};
+
 var reloadAll = function() {
 	sendAll('reload', {});
-}
+};
 
 var sh = repl.start("master >");
 sh.context.reloadAll = reloadAll;
