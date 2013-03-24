@@ -20,7 +20,7 @@ It couldn't be simpler!
 	git clone http://github.com/cfstras/talkbox.js.git
 	cd talkbox.js
 	npm install
-	npm start
+	npm start talkbox
 
 License
 -------
