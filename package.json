@@ -1,7 +1,7 @@
 {
 	"name": "talkbox",
 	"description": "A minimalistic webchat",
-	"version": "0.1.4-alpha",
+	"version": "0.1.5-alpha",
 	"keywords": ["talkbox","talkbox.js","cfstras","chat","jquery","connect"],
 	"homepage": "https://github.com/cfstras/talkbox.js",
 	"bugs": "https://github.com/cfstras/talkbox.js/issues",
@@ -30,9 +30,9 @@
 	],
 	"main": "talkbox.js",
 	"dependencies": {
-		"socket.io": "",
-		"connect": "",
-		"validator": ""
+		"socket.io": "0.9.14",
+		"connect": "2.7.6 ",
+		"validator": "1.0.0"
 	},
 	"scripts": {"start": "node talkbox.js"}
 }

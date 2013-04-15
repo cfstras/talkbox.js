@@ -1,9 +1,10 @@
 <!doctype html>
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="client.css">
+
 <script src="/socket.io/socket.io.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<link rel="stylesheet" type="text/css" href="client.css">
 <script src="/util.js"></script>
 <script src="/client.js"></script>
 </head>
@@ -22,6 +23,9 @@
 				</div>
 			</form>
 		</div>
+		<div id="overlay"></div>
+		<div id="overlaymessage"><p id="connect"></p>
+		<p id="javascript">Do you have Javascript enabled?</p></div>
 	</section>
 	<!--footer here-->
 </div>

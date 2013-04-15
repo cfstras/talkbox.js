@@ -130,3 +130,37 @@ aside#userlist span.user {
 .clearfix {
 	clear:both;
 }
+
+#overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: #555;
+	opacity:0.5;
+	filter:alpha(opacity=50); /* For IE8 and earlier */
+}
+#overlaymessage {
+	font-size: 1.3em;
+	position: absolute;
+	top: 0;
+	padding: 1em 0.3em 0.3em 0.3em;
+	box-sizing: border-box;
+	text-align: center;
+	height: 7em;
+	width: 16em;
+	border-radius: 0em 0em 1em 1em;
+	border: 2px solid black;
+	background: white;
+	left:50%;
+	margin-left:-8em;
+	margin-top: -2px;
+}
+#overlaymessage #connect {
+	margin-top: 1em;
+	display:none;
+}
+#overlaymessage #javascript {
+	margin-top: 0.5em;
+}
