@@ -25,6 +25,8 @@
 		"LICENSE",
 		".gitignore",
 		"talkbox.js",
+		"client.js",
+		"make.js",
 		"package.json",
 		"Readme.md"
 	],
