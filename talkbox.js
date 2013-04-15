@@ -25,9 +25,9 @@ io.sockets.on('connection', function (socket) {
 	var client = {
 		id: socket.id,
 		sock: socket,
-		name: "noob"};
+		name: "unnamed_user_"+(Math.floor(Math.random()*1000))};
 	socket.on('auth', function(data) {
-		if(data.secret == null) {
+		if(!data.secret) {
 			newAuth(client, socket);
 		} else {
 			client.name = data.name;
@@ -45,12 +45,20 @@ io.sockets.on('connection', function (socket) {
 	});
 	socket.on('msg', function(data) {
 		var message = makeMsg(client, data);
-		if (message.text != null && message.text != "") {
+		if(!message) {
+			socket.emit('msg', {name: 'server', server:true,
+				text: 'Invalid Message.'});
+		} else {
 			sendAll('msg',message);
 		}
 	});
 	
 	socket.on('ren', function(data) {
+		if(!data.name) {
+			socket.emit('msg', {name: 'server', server:true,
+				text: 'Invalid Message.'});
+			return;
+		}
 		data.name = data.name.trim()
 			.replace(/<.*>/gm,"");
 		if(name_regex.test(data.name)) {
@@ -143,16 +151,16 @@ var welcome = function(client, auth, socket) {
 }
 
 var makeMsg = function(client, data) {
-	var m = {
+	if (!data || !data.text) return undefined;
+	
+	return m = {
 		id: client.id,
 		name: client.name,
-		text: data.text,
+		text: sanitize(data.text.trim())
+			.escape()
+			.replace(/(\r\n|\n|\r)/gm, '<br />\n'),
 		date: new Date(),
 	};
-	m.text = sanitize(m.text.trim())
-		.escape()
-		.replace(/(\r\n|\n|\r)/gm, '<br />\n');
-	return m;
 };
 
 var sendAll = function(type, message) {
