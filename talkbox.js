@@ -46,8 +46,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on('msg', function(data) {
 		var message = makeMsg(client, data);
 		if(!message) {
-			socket.emit('msg', {name: 'server', server:true,
-				text: 'Invalid Message.'});
+			socket.emit('msg', makeServerMsg('msg','Invalid Message.'));
 		} else {
 			sendAll('msg',message);
 		}
@@ -55,8 +54,7 @@ io.sockets.on('connection', function (socket) {
 	
 	socket.on('ren', function(data) {
 		if(!data.name) {
-			socket.emit('msg', {name: 'server', server:true,
-				text: 'Invalid Message.'});
+			socket.emit('msg', makeServerMsg('msg','Invalid Message.'));
 			return;
 		}
 		data.name = data.name.trim()
@@ -70,15 +68,10 @@ io.sockets.on('connection', function (socket) {
 				sendAll('ren', {
 					id: client.id,
 					name: client.name,
-					msg: {
-						type: 'ren',
-						name: 'server',
-						server: true,
-						text: old + ' is now known as '
-							+ client.name,
-						date: new Date()
-					}
-				});
+					msg: makeServerMsg('ren',
+						old + ' is now known as '
+							+ client.name),
+					});
 			}
 		} else {
 			socket.emit('err', {
@@ -162,6 +155,16 @@ var makeMsg = function(client, data) {
 		date: new Date(),
 	};
 };
+
+var makeServerMsg = function(type,message) {
+	return {
+		type: type,
+		name: 'server',
+		server: true,
+		text: message,
+		date: new Date()
+	};
+}
 
 var sendAll = function(type, message) {
 	for(i in clients) {
