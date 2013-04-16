@@ -112,6 +112,10 @@ addMessage = function(data) {
 		.animate({
 			opacity: 1
 		}, 150);
+	d.find('a').addClass('oembed').oembed();
+	d.find('a[href$="jpg"], a[href$="jpeg"], a[href$="png"], a[href$="gif"]').each(function() { 
+    	$(this).html($(this).html().replace(/(http:\/\/\S+(\.png|\.jpg|\.gif))/g, '<a href="$1"><img src="$1" /></a>')); 
+	});
 	$('#msgs').animate({
 		scrollTop: $('#msgs #inner').height()
 	},150);

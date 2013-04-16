@@ -1,9 +1,11 @@
 function parse(msg) {
 	//linkify
-	return replaceURLWithHTMLLinks(msg);
+	msg = linkify(msg);
+	return msg;
 }
 
-function replaceURLWithHTMLLinks(text) {
-    var exp = /(\b[A-z]+:\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-    return text.replace(exp,"<a href='$1'>$1</a>"); 
+function linkify(text) {
+    var urls = /(\b[A-z]+:\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+    var linkified = text.replace(urls,"<a href='$1'>$1</a>");
+    return linkified;
 }
