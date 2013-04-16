@@ -68,8 +68,6 @@ function checkNotificationPerm(perm) {
 	}
 }
 
-
-
 function requestNotificationPerm() {
 	Notification.requestPermission(checkNotificationPerm);
 }
@@ -165,10 +163,14 @@ addMessage = function(data) {
 		.animate({
 			opacity: 1
 		}, 150);
-	d.find('a').addClass('oembed').oembed();
-	d.find('a[href$="jpg"], a[href$="jpeg"], a[href$="png"], a[href$="gif"]').each(function() { 
-    	$(this).html($(this).html().replace(/(http:\/\/\S+(\.png|\.jpg|\.gif))/g, '<a href="$1"><img src="$1" /></a>')); 
-	});
+	d.find('a')
+		.oembed() // oEmbed handles youtube etc
+		.filter(function(el){ // filter all remaining images
+			return this.href.match(/\.(jpe?g|png|gif|svg)$/i)
+		})
+		.each(function() { //put an image in
+			$(this).html('<img src="' + this.href + '" />'); 
+		});
 	$('#msgs').animate({
 		scrollTop: $('#msgs #inner').height()
 	},150);
