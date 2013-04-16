@@ -105,13 +105,17 @@ addMessage = function(data) {
 		
 		+ '<span class="name'+(data.server?' server':'') + '">'
 		+ data.name + ':</span>'
-		+ '<span class="text">' + data.text + '</span>'
+		+ '<span class="text">' + parse(data.text) + '</span>'
 		+ '<span class="right">' + date.toLocaleTimeString() + '</span>'
 		+ '</div>')
 		.appendTo('#msgs #inner')
 		.animate({
 			opacity: 1
 		}, 150);
+	d.find('a').addClass('oembed').oembed();
+	d.find('a[href$="jpg"], a[href$="jpeg"], a[href$="png"], a[href$="gif"]').each(function() { 
+    	$(this).html($(this).html().replace(/(http:\/\/\S+(\.png|\.jpg|\.gif))/g, '<a href="$1"><img src="$1" /></a>')); 
+	});
 	$('#msgs').animate({
 		scrollTop: $('#msgs #inner').height()
 	},150);
