@@ -16,8 +16,10 @@ function Client(socket) {
 	var self = this;
 	this.handleMsg = function(data) {
 		var message = make.msg(self, data);
-		if(!message) {
+		if(message === undefined) {
 			self.sock.emit('msg', make.serverMsg('msg','Invalid Message.'));
+		} else if(message === false) {
+			return;
 		} else {
 			sendAll('msg',message);
 		}
