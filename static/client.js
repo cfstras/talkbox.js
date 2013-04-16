@@ -105,7 +105,7 @@ addMessage = function(data) {
 		
 		+ '<span class="name'+(data.server?' server':'') + '">'
 		+ data.name + ':</span>'
-		+ '<span class="text">' + data.text + '</span>'
+		+ '<span class="text">' + parse(data.text) + '</span>'
 		+ '<span class="right">' + date.toLocaleTimeString() + '</span>'
 		+ '</div>')
 		.appendTo('#msgs #inner')
