@@ -22,16 +22,20 @@ var connect = function(){
 };
 
 var userlist = [];
+var myName = "";
 var myId = "";
 var notificationsSupported = false;
 var notificationsEnabled = false;
+var windowFocused = true;
 
 function initClient() {
 	notificationsSupported = !!window.Notification;
 	if (notificationsSupported) {
 		var perm = Notification.permission;
 		if(!perm) {
-			perm = new Notification("testing").permission;
+			var notif = new Notification("testing")
+			notif.onshow = function(){this.close()};
+			perm = notif.permission;
 		}
 		checkNotificationPerm(perm);
 	}
@@ -51,7 +55,6 @@ function checkNotificationPerm(perm) {
 		});
 		notifs.find('.nope').click(function() {
 			closeOverlay('#notifications');
-			//TODO save this, to not annoy the user any more
 		});
 		notifs.fadeIn(300);
 		$('#overlaymessage').fadeIn(300);
@@ -79,15 +82,16 @@ function onMsg(data) {
 function onRen(data) {
 	if(data.id === myId) {
 		localStorage.setItem('name',data.name);
+		myName = data.name;
 	}
 	addMessage(data.msg);
 	$('#userlist .inner #'+data.id).fadeOut(200, function() {
-        $(this).text(data.name).fadeIn(100);
-    });
+		$(this).text(data.name).fadeIn(100);
+	});
 	find(userlist,data.id).name = data.name;
 };
 function onUserList(data) {
-	//TODO check userlist
+	//TODO check if userlist has a valid format
 	setUserlist(data);
 };
 function onErr(data) {
@@ -123,6 +127,7 @@ function onWelcome(data) {
 	localStorage.setItem('secret',data.secret);
 	localStorage.setItem('name',data.name);
 	myId = data.id;
+	myName = data.name;
 	closeOverlay('#connect');
 };
 function onDisconnect() {
@@ -163,24 +168,29 @@ addMessage = function(data) {
 	$('#msgs').animate({
 		scrollTop: $('#msgs #inner').height()
 	},150);
-	notify(data);
+	if(data.name != myName) {
+		notify(data);
+	}
 	return d;
 };
 
 function notify(data) {
-	//TODO alternatives
-	//TODO only show if window is unfocused
+	//TODO use alternatives when not supported
+	// Possible Alternatives:
+	//  Prepend something to window title
+	//  Flash Tab
+	if(windowFocused) return;
+	console.log("focused:");
 	if(!notificationsEnabled) return;
 	if(!notificationsSupported) return;
 	
-	var title = data.server ? "talkbox server" : data.name;
 	var notif = new Notification(
-		title, {
+		data.name, {
 			body: data.text,
 			tag: 'talkbox.message'
 		}
 	);
-	console.log('notifying',title,data.text);
+	console.log('notifying',notif);
 	//notif.onclose
 	notif.onshow = function() {
 		var self = this;
@@ -276,6 +286,13 @@ $(document).ready(function() {
 			if(!event.shiftKey)
 				$('#inputbox').insertAtCaret('\n');
 		}
+	});
+	$(window).blur(function(){
+		windowFocused = false;
+		console.log("unfocus");
+	}).focus(function() {
+		windowFocused = true;
+		console.log("focus");
 	});
 	//s$('button').click();
 });
