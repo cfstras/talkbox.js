@@ -100,10 +100,12 @@ function onConnectFailed() {
 
 addMessage = function(data) {
 	var date = new Date(data.date);
+	var user = findById(userlist, data.id);
 	var d = $('<div class="message'
 		+ '" style="opacity: 0;">'
 		
-		+ '<span class="name'+(data.server?' server':'') + '">'
+		+ '<span class="name'+(data.server?' server':'') + '"'
+		+ (data.server?'':' style="color:'+user.color+'"') +'>'
 		+ data.name + ':</span>'
 		+ '<span class="text">' + data.text + '</span>'
 		+ '<span class="right">' + date.toLocaleTimeString() + '</span>'
@@ -144,7 +146,7 @@ setUserlist = function(data) {
 };
 makeUserEl = function(user) {
 	return $('<span class="user" id="' + user.id
-				+ '" style="opacity: 0;">'
+				+ '" style="opacity: 0;color:'+user.color+';">'
 				+ user.name + '</span>');
 }
 
