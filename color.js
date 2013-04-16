@@ -1,6 +1,6 @@
 function genColor() {
 	var rand = (Math.floor(Math.random()*360));
-	return hsv2rgb(rand, 0.99, 0.99);
+	return hsv2rgb(rand, 0.99, 0.5);
 }
 
 function hsv2rgb(h,s,v) {
