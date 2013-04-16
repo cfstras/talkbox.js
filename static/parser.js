@@ -1,11 +1,10 @@
+var urlregex = /(\b[A-z]+:\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+
 function parse(msg) {
 	//linkify
-	msg = linkify(msg);
-	return msg;
+	return linkify(msg);
 }
 
 function linkify(text) {
-    var urls = /(\b[A-z]+:\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-    var linkified = text.replace(urls,"<a href='$1'>$1</a>");
-    return linkified;
+	return text.replace(urlregex,'<a href="$1" target="_blank">$1</a>');
 }
