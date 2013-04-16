@@ -6,6 +6,7 @@ var auths = [];
 
 var Make = require('./make');
 var make = new Make(clients);
+var color = require('./color');
 
 var name_regex = /^[A-Za-zäöü0-9-_\.:]{3,20}$/;
 var name_symbols = 'A-Z a-z äöü 0-9-_\.:';
@@ -135,6 +136,7 @@ function Client(socket) {
 	this.id = socket.id;
 	this.sock = socket;
 	this.name = "unnamed_user_"+(Math.floor(Math.random()*1000));
+	this.color = color.genColor();
 	var f = this.handleAuth;
 	this.sock.on('auth', this.handleAuth);
 	this.sock.on('msg', this.handleMsg);
