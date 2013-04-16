@@ -20,13 +20,62 @@ var connect = function(){
 	socket.on('reconnect_failed',onReconnectFailed);
 	socket.on('connect_failed',onConnectFailed);
 };
+
 var userlist = [];
 var myId = "";
+var notificationsSupported = false;
+var notificationsEnabled = false;
+
+function initClient() {
+	notificationsSupported = !!window.Notification;
+	if (notificationsSupported) {
+		var perm = Notification.permission;
+		if(!perm) {
+			perm = new Notification("testing").permission;
+		}
+		checkNotificationPerm(perm);
+	}
+}
+
+function checkNotificationPerm(perm) {
+	console.log(perm);
+	if(perm === 'denied') {
+		// user has denied permissions.
+		//TODO notify him of that maybe?
+	} else if(perm === 'default') {
+		// set up question box
+		var notifs = $('#overlaymessage #notifications');
+		notifs.find('.sure').click(function() {
+			closeOverlay('#notifications');
+			requestNotificationPerm();
+		});
+		notifs.find('.nope').click(function() {
+			closeOverlay('#notifications');
+			//TODO save this, to not annoy the user any more
+		});
+		notifs.fadeIn(300);
+		$('#overlaymessage').fadeIn(300);
+		
+	} else if(perm === 'granted') {
+		//yay
+		notificationsEnabled = true;
+	} else {
+		//browser is incompatible
+		console.log('what does a notification permission level of"',perm,'"mean?');
+	}
+}
+
+
+
+function requestNotificationPerm() {
+	Notification.requestPermission(checkNotificationPerm);
+}
 
 function onMsg(data) {
 	console.log(data);
 	addMessage(data);
-};
+}
+
 function onRen(data) {
 	if(data.id === myId) {
 		localStorage.setItem('name',data.name);
@@ -74,8 +123,7 @@ function onWelcome(data) {
 	localStorage.setItem('secret',data.secret);
 	localStorage.setItem('name',data.name);
 	myId = data.id;
-	$('#overlay').fadeOut(300);
-	$('#overlaymessage').fadeOut(300);
+	closeOverlay('#connect');
 };
 function onDisconnect() {
 	overlayMsg("disconnected");
@@ -115,8 +163,33 @@ addMessage = function(data) {
 	$('#msgs').animate({
 		scrollTop: $('#msgs #inner').height()
 	},150);
+	notify(data);
 	return d;
 };
+
+function notify(data) {
+	//TODO alternatives
+	//TODO only show if window is unfocused
+	if(!notificationsEnabled) return;
+	if(!notificationsSupported) return;
+	
+	var title = data.server ? "talkbox server" : data.name;
+	var notif = new Notification(
+		title, {
+			body: data.text,
+			tag: 'talkbox.message'
+		}
+	);
+	console.log('notifying',title,data.text);
+	//notif.onclose
+	notif.onshow = function() {
+		var self = this;
+		setTimeout(function(){self.close();},5000);
+	};
+	//notif.onclick
+	//notif.onerror
+
+}
 
 setUserlist = function(data) {
 	$('#userlist .inner').fadeIn(50);
@@ -150,10 +223,21 @@ makeUserEl = function(user) {
 
 function overlayMsg(message) {
 	$('#overlay').fadeIn(300);
-	$('#overlaymessage #connect').fadeOut(300,function() {
-		$(this).html(message).fadeIn(300);
-	});
+	$('#overlaymessage #connect').html(message).fadeIn(300);
 	$('#overlaymessage').fadeIn(300);
+}
+
+function closeOverlay (subElement){
+	// check if there are subElements remaining, if not, fadeOut message
+	if($('#overlaymessage').find(':visible').size() <= 1){
+		$('#overlaymessage').fadeOut(300);
+	}
+	
+	//fadeOut other stuff
+	if(subElement) {
+		$('#overlaymessage').find(subElement).fadeOut(300,closeOverlay);
+	}
+	$('#overlay').fadeOut(300);
 }
 
 send = function() {
@@ -175,6 +259,9 @@ send = function() {
 $(document).ready(function() {
 	//disable JS warning
 	$('#javascript').remove();
+	$('#overlay').hide();
+	$('#overlaymessage').hide();
+	initClient();
 	overlayMsg("connecting...");
 	connect();
 	$('#inputbox').keydown(function(event) {

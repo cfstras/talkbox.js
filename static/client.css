@@ -145,11 +145,11 @@ aside#userlist span.user {
 	font-size: 1.3em;
 	position: absolute;
 	top: 0;
-	padding: 1em 0.3em 0.3em 0.3em;
+	padding: 1em 0.5em 0.5em 0.5em;
 	box-sizing: border-box;
 	text-align: center;
-	height: 7em;
-	width: 16em;
+	min-height: 7em;
+	min-width: 16em;
 	border-radius: 0em 0em 1em 1em;
 	border: 2px solid black;
 	background: white;
@@ -159,8 +159,15 @@ aside#userlist span.user {
 }
 #overlaymessage #connect {
 	margin-top: 1em;
-	display:none;
 }
 #overlaymessage #javascript {
 	margin-top: 0.5em;
+}
+#overlaymessage #notifications {
+	margin-top: 0.5em;
+}
+#overlaymessage button {
+	margin: 0.5em;
+	font-size: inherit;
+	padding: 0.2em;
 }
