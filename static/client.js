@@ -68,8 +68,6 @@ function checkNotificationPerm(perm) {
 	}
 }
 
-
-
 function requestNotificationPerm() {
 	Notification.requestPermission(checkNotificationPerm);
 }
@@ -158,13 +156,21 @@ addMessage = function(data) {
 		
 		+ '<span class="name'+(data.server?' server':'') + '">'
 		+ data.name + ':</span>'
-		+ '<span class="text">' + data.text + '</span>'
+		+ '<span class="text">' + parse(data.text) + '</span>'
 		+ '<span class="right">' + date.toLocaleTimeString() + '</span>'
 		+ '</div>')
 		.appendTo('#msgs #inner')
 		.animate({
 			opacity: 1
 		}, 150);
+	d.find('a')
+		.oembed() // oEmbed handles youtube etc
+		.filter(function(el){ // filter all remaining images
+			return this.href.match(/\.(jpe?g|png|gif|svg)$/i)
+		})
+		.each(function() { //put an image in
+			$(this).html('<img src="' + this.href + '" />'); 
+		});
 	$('#msgs').animate({
 		scrollTop: $('#msgs #inner').height()
 	},150);
