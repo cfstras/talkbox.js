@@ -29,12 +29,15 @@ function Make(clients) {
 	};
 	
 	this.msg = function(client, data) {
-		if (!data || !data.text) return undefined;
-		
+		if (!data || data.text===undefined)
+			return undefined;
+		data.text = data.text.trim();
+		if(!data.text)
+			return false;
 		return m = {
 			id: client.id,
 			name: client.name,
-			text: sanitize(data.text.trim())
+			text: sanitize(data.text)
 				.escape()
 				.replace(/(\r\n|\n|\r)/gm, '<br />\n'),
 			date: new Date(),
