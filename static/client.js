@@ -87,16 +87,19 @@ function onRen(data) {
 		$(this).text(data.name).fadeIn(100);
 	});
 	find(userlist,data.id).name = data.name;
-};
+}
+
 function onUserList(data) {
 	//TODO check if userlist has a valid format
 	setUserlist(data);
-};
+}
+
 function onErr(data) {
 	data.server = true;
 	data.name = 'server';
 	addMessage(data);
-};
+}
+
 function onUserLeave(user) {
 	console.log('dc: '+user.name);
 	var index = findIndexById(userlist, user.id);
@@ -106,28 +109,33 @@ function onUserLeave(user) {
 		console.info('got userleave: '+user+', but not found in list'+userlist);
 	}
 	setUserlist(userlist)
-};
+}
+
 function onUserJoin(data) {
 	userlist.push(data);
 	setUserlist(userlist);
-};
+}
+
 function onReload() {
 	location.reload();
-};
+}
+
 function onConnect() {
 	socket.emit('auth',{
 		secret: localStorage.getItem('secret'),
 		name: localStorage.getItem('name')
 	});
 	overlayMsg("logging in...");
-};
+}
+
 function onWelcome(data) {
 	localStorage.setItem('secret',data.secret);
 	localStorage.setItem('name',data.name);
 	myId = data.id;
 	myName = data.name;
 	closeOverlay('#connect');
-};
+}
+
 function onDisconnect() {
 	overlayMsg("disconnected");
 	addMessage({
@@ -136,27 +144,29 @@ function onDisconnect() {
 		text: 'disconnected from server',
 		date: new Date()});
 	$('#userlist .inner').fadeOut(200).empty();
-};
+}
+
 function onReconnecting() {
 	overlayMsg("reconnecting...");
-};
+}
+
 function onReconnectFailed() {
 	overlayMsg("gave up reconnect for now");
 	setTimeout(connect,1000*60); // sleep 60 seconds, then reconnect
-};
+}
+
 function onConnectFailed() {
 	overlayMsg("gave up connect for now");
 	setTimeout(connect,1000*60); // sleep 60 seconds, then reconnect
-};
+}
 
-addMessage = function(data) {
+function addMessage(data) {
 	var date = new Date(data.date);
 	var user = findById(userlist, data.id);
 	var d = $('<div class="message'
 		+ '" style="opacity: 0;">'
-		
-		+ '<span class="name'+(data.server?' server':'') + '"'
-		+ (data.server?'':' style="color:'+user.color+'"') +'>'
+		+ '<span class="name'+(data.server?' server' : '') + '" '
+		+ (user && user.color?'style="color:'+user.color+'"' : '') +'>'
 		+ data.name + ':</span>'
 		+ '<span class="text">' + parse(data.text) + '</span>'
 		+ '<span class="right">' + date.toLocaleTimeString() + '</span>'
@@ -209,7 +219,7 @@ function notify(data) {
 
 }
 
-setUserlist = function(data) {
+function setUserlist(data) {
 	$('#userlist .inner').fadeIn(50);
 	userlist = data;
 	$('#userlist .inner .user').each(function(i, el) {
@@ -233,10 +243,11 @@ setUserlist = function(data) {
 		}
 	}
 };
-makeUserEl = function(user) {
+
+function makeUserEl(user) {
 	return $('<span class="user" id="' + user.id
-				+ '" style="opacity: 0;color:'+user.color+';">'
-				+ user.name + '</span>');
+		+ '" style="opacity: 0;color:'+user.color+';">'
+		+ user.name + '</span>');
 }
 
 function overlayMsg(message) {
