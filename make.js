@@ -25,7 +25,9 @@ function Make(clients) {
 	this.userToSend = function(client) {
 		return {
 			id: client.id,
-			name: client.name};
+			name: client.name,
+			color: client.color
+		};
 	};
 	
 	this.msg = function(client, data) {
@@ -42,7 +44,8 @@ function Make(clients) {
 				.replace(/(\r\n|\n|\r)/gm, '<br />\n'),
 			date: new Date(),
 		};
-	}
+	};
+
 }
 
 module.exports = Make;
