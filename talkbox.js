@@ -6,7 +6,8 @@ var connect = require('connect'),
 	repl = require('repl');
 
 var libClient = require('./client'),
-	xmpp = require('./xmpp');
+	xmpp = require('./xmpp'),
+	settings = require('./settings');
 
 io.set('log level', 1);
 app.listen(80);
@@ -17,10 +18,11 @@ io.sockets.on('connection', function(socket) {
 
 xmpp.init(libClient,[]);
 
-var sh = repl.start("master >");
+var sh = repl.start("talkbox >");
 sh.context.reloadAll = libClient.reloadAll;
 sh.context.make = libClient.make;
 sh.context.sendAll = libClient.sendAll;
 sh.context.io = io;
 sh.context.clients = libClient.clients;
 sh.context.auths = libClient.auths;
+
