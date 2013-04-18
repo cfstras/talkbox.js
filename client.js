@@ -174,3 +174,4 @@ module.exports.Client = Client;
 module.exports.clients = clients;
 module.exports.reloadAll = reloadAll;
 module.exports.make = make;
+module.exports.sendAll = sendAll;

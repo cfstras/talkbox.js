@@ -5,14 +5,17 @@ var connect = require('connect'),
 	fs = require('fs'),
 	repl = require('repl');
 
-var libClient = require('./client');
+var libClient = require('./client'),
+	xmpp = require('./xmpp');
 
 io.set('log level', 1);
 app.listen(80);
 
 io.sockets.on('connection', function(socket) {
-	new libClient.Client(socket);
+	var c = new libClient.Client(socket);
 });
+
+xmpp.init(libClient,[]);
 
 var sh = repl.start("master >");
 sh.context.reloadAll = libClient.reloadAll;
