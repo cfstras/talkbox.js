@@ -43,3 +43,4 @@ insertAtCaret: function(myValue){
   })
 }
 });
+

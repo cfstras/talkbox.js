@@ -34,6 +34,8 @@
 	"dependencies": {
 		"socket.io": "0.9.14",
 		"connect": "2.7.6 ",
+		"base64id": "0.1.0",
+		"simple-xmpp": "0.1.9",
 		"validator": "1.0.0"
 	},
 	"scripts": {"start": "node talkbox.js"}

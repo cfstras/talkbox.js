@@ -8,10 +8,10 @@ var Make = require('./make');
 var make = new Make(clients);
 var color = require('./color');
 
-var name_regex = /^[A-Za-zäöü0-9-_\.:]{3,20}$/;
-var name_symbols = 'A-Z a-z äöü 0-9-_\.:';
+var name_regex = /^[A-Za-zäöü0-9-_\.	]{3,30}$/;
+var name_symbols = 'A-Z a-z äöü 0-9 - _ \.';
 var name_minLen = 3;
-var name_maxLen = 20;
+var name_maxLen = 30;
 
 function Client(socket) {
 	var self = this;
@@ -40,6 +40,7 @@ function Client(socket) {
 				self.auth.name = self.name;
 				sendAll('ren', {
 					id: self.id,
+					oldName: old,
 					name: self.name,
 					msg: make.serverMsg('ren',
 						old + ' is now known as '
@@ -79,16 +80,8 @@ function Client(socket) {
 		var i = clients.indexOf(self)
 		if(i != -1) {
 			clients.splice(i,1)
-			sendAll('msg',{
-				text: 'user ' + self.name
-				+ ' left channel.',
-				name: 'server',
-				server: true,
-				date: new Date()});
-			sendAll('userleave', {
-				id: self.id,
-				name: self.name});
-		} // else: he was not authed.
+			sendDisconnectMsg(self.id, self.name);
+		} // else: he was not logged in.
 	};
 	this.welcome = function() {
 		sendAll('userjoin',make.userToSend(self));
@@ -127,8 +120,10 @@ function Client(socket) {
 			auths.push(auth);
 			self.auth = auth;
 			self.welcome();
-			//TODO?
 		});
+	};
+	this.send = function(type, message) {
+		self.sock.emit(type, message);
 	};
 	
 	console.info('incoming connection from '
@@ -146,11 +141,18 @@ function Client(socket) {
 	this.sock.on('disconnect', this.handleDisconnect);
 }
 
-
 var sendAll = function(type, message) {
-	for(i in clients) {
-		clients[i] && clients[i].sock.emit(type, message);
-	}
+	clients.forEach(function(c){
+		c.send(type, message);
+	});
+};
+
+var sendDisconnectMsg = function(id, name) {
+	sendAll('msg', make.serverMsg('disconnect',
+		'user ' + name + ' left the thread.'));
+	sendAll('userleave', {
+		id: id,
+		name: name});
 };
 
 var reloadAll = function() {
@@ -178,3 +180,6 @@ module.exports.Client = Client;
 module.exports.clients = clients;
 module.exports.reloadAll = reloadAll;
 module.exports.make = make;
+module.exports.sendAll = sendAll;
+module.exports.sendDisconnectMsg = sendDisconnectMsg;
+
