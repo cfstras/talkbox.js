@@ -27,6 +27,8 @@ var myId = "";
 var notificationsSupported = false;
 var notificationsEnabled = false;
 var windowFocused = true;
+var unreadmessages = 0;
+var unreadmsgusers = [];
 
 function initClient() {
 	notificationsSupported = !!window.Notification;
@@ -75,6 +77,22 @@ function requestNotificationPerm() {
 function onMsg(data) {
 	console.log(data);
 	addMessage(data);
+	if(windowFocused) {
+		//do nothing
+	} else {
+		if(unreadmsgusers.indexOf(data.name) === -1 && !data.server) {
+			unreadmsgusers.push(data.name);
+		}
+		if(!data.server) {
+			unreadmessages++;
+		}
+		var usercount = unreadmsgusers.length;
+		if(unreadmessages > 0) {
+			document.title = unreadmessages+" from "+ usercount +" users.";
+		} else {
+			document.title = "talkbox";
+		}
+	}
 }
 
 function onRen(data) {
@@ -86,7 +104,12 @@ function onRen(data) {
 	$('#userlist .inner #'+data.id).fadeOut(200, function() {
 		$(this).text(data.name).fadeIn(100);
 	});
-	find(userlist,data.id).name = data.name;
+	var user = findById(userlist,data.id);
+	var index = 0;
+	if((index = unreadmsgusers.indexOf(user.name)) !== -1) {
+		unreadmsgusers[index] = data.name;
+	}
+	user.name = data.name;
 };
 function onUserList(data) {
 	//TODO check if userlist has a valid format
@@ -299,6 +322,9 @@ $(document).ready(function() {
 	}).focus(function() {
 		windowFocused = true;
 		console.log("focus");
+		unreadmessages = 0;
+		unreadmsgusers = [];
+		document.title = "talkbox";
 	});
 	//s$('button').click();
 });
