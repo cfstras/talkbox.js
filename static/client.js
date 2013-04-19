@@ -27,6 +27,11 @@ var myId = "";
 var notificationsSupported = false;
 var notificationsEnabled = false;
 var windowFocused = true;
+var unreadmessages = 0;
+var unreadusers = 0;
+var unreadmsgusers = [];
+var stopAlert = null;
+var alertInfo = {};
 
 function initClient() {
 	notificationsSupported = !!window.Notification;
@@ -72,9 +77,26 @@ function requestNotificationPerm() {
 	Notification.requestPermission(checkNotificationPerm);
 }
 
-function onMsg(data) {
+function onMsg(data) { 
 	console.log(data);
 	addMessage(data);
+	if(windowFocused) {
+		//do nothing
+	} else {
+		if(unreadmsgusers.indexOf(data.name) === -1 && !data.server) {
+			unreadmsgusers.push(data.name);
+		}
+		if(!data.server) {
+			unreadmessages++;
+			unreadusers = unreadmsgusers.length;
+			alertInfo.msgs = unreadmessages;
+			alertInfo.users = unreadusers;
+			alertInfo.oldTitle = "talkbox";//TODO: move to settings
+			stopAlert && stopAlert();
+			document.title = "talkbox";	
+			stopAlert = AlertUnread(alertInfo);
+		}
+	}
 }
 
 function onRen(data) {
@@ -86,8 +108,14 @@ function onRen(data) {
 	$('#userlist .inner #'+data.id).fadeOut(200, function() {
 		$(this).text(data.name).fadeIn(100);
 	});
-	find(userlist,data.id).name = data.name;
-}
+	
+	var user = findById(userlist,data.id);
+	var index = 0;
+	if((index = unreadmsgusers.indexOf(user.name)) !== -1) {
+		unreadmsgusers[index] = data.name;
+	}
+	user.name = data.name;
+};
 
 function onUserList(data) {
 	//TODO check if userlist has a valid format
@@ -309,9 +337,18 @@ $(document).ready(function() {
 	$(window).blur(function(){
 		windowFocused = false;
 		console.log("unfocus");
+		if(unreadmessages === null) {
+			if(stopAlert !== null) {
+				stopAlert();
+			}
+		}
 	}).focus(function() {
 		windowFocused = true;
 		console.log("focus");
+		// reset title notification data
+		unreadmessages = 0;
+		unreadmsgusers = [];
+		document.title = "talkbox";
 	});
 	//s$('button').click();
 });
