@@ -1,8 +1,17 @@
 {
 	"name": "talkbox",
-	"description": "A minimalistic webchat",
-	"version": "0.1.5-alpha",
-	"keywords": ["talkbox","talkbox.js","cfstras","chat","jquery","connect"],
+	"description": "A minimalistic webchat with xmpp-connect",
+	"version": "0.2.1-alpha",
+	"keywords": [
+		"talkbox",
+		"talkbox.js",
+		"cfstras",
+		"chat",
+		"jquery",
+		"connect",
+		"webchat",
+		"markdown",
+		"xmpp"],
 	"homepage": "https://github.com/cfstras/talkbox.js",
 	"bugs": "https://github.com/cfstras/talkbox.js/issues",
 	"readmeFilename": "Readme.md",
@@ -11,7 +20,11 @@
 			"email": "claus@strasburger.de",
 			"url": "http://about.me/cfstras"
 		},
-	"contributors": [],
+	"contributors": [{
+			"name": "morth",
+			"email": "morth@q1cc.net",
+			"url": "http://morth.q1cc.net"
+		}],
 	"license" : "LGPLv3",
 	"repository" : {
 		"type" : "git",
