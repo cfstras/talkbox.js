@@ -1,7 +1,7 @@
 var sanitize = require('validator').sanitize,
-	base64id = require('base64id');
-	
-var lib = require('simple-xmpp');
+	base64id = require('base64id'),
+	lib = require('simple-xmpp'),
+	color = require('./color');
 
 function XMPP(libClient, settings) {
 	this.libClient = libClient;
@@ -118,6 +118,7 @@ function XMPPClient(parent,jid,alias) {
 	this.jid = jid;
 	this.id = base64id.generateId();
 	this.send = this.send.bind(this);
+	this.color = color.genColor();
 }
 
 XMPPClient.prototype.send = function(type, message) {

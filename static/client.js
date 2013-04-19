@@ -77,7 +77,7 @@ function requestNotificationPerm() {
 	Notification.requestPermission(checkNotificationPerm);
 }
 
-function onMsg(data) { 
+function onMsg(data) {
 	console.log(data);
 	addMessage(data);
 	if(windowFocused) {
