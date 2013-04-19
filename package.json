@@ -22,6 +22,9 @@
 		"static/client.js",
 		"static/index.html",
 		"static/util.js",
+		"static/marked.js",
+		"static/parser.js",
+		"jquery.oembed.js",
 		"LICENSE",
 		".gitignore",
 		"talkbox.js",
@@ -34,7 +37,8 @@
 	"dependencies": {
 		"socket.io": "0.9.14",
 		"connect": "2.7.6 ",
-		"validator": "1.0.0"
+		"validator": "1.0.0",
+		"marked": "0.2.8"
 	},
 	"scripts": {"start": "node talkbox.js"}
 }

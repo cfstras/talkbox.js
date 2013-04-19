@@ -38,6 +38,9 @@ body {
 	display: inline;
 	background: #ddd;
 }
+.message .text p {
+	display: inline;
+}
 .message .right {
 	float: right;
 	color: #888;

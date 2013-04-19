@@ -168,7 +168,7 @@ function addMessage(data) {
 		+ '<span class="name'+(data.server?' server' : '') + '" '
 		+ (user && user.color?'style="color:'+user.color+'"' : '') +'>'
 		+ data.name + ':</span>'
-		+ '<span class="text">' + parse(data.text) + '</span>'
+		+ '<span class="text">' + marked.parser(marked.lexer(data.text)) + '</span>'
 		+ '<span class="right">' + date.toLocaleTimeString() + '</span>'
 		+ '</div>')
 		.appendTo('#msgs #inner')
@@ -315,5 +315,3 @@ $(document).ready(function() {
 	});
 	//s$('button').click();
 });
-
-
