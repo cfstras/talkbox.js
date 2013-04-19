@@ -337,10 +337,8 @@ $(document).ready(function() {
 	$(window).blur(function(){
 		windowFocused = false;
 		console.log("unfocus");
-		if(unreadmessages === null) {
-			if(stopAlert !== null) {
-				stopAlert();
-			}
+		if(!unreadmessages) {
+			stopAlert && stopAlert();
 		}
 	}).focus(function() {
 		windowFocused = true;
@@ -348,7 +346,9 @@ $(document).ready(function() {
 		// reset title notification data
 		unreadmessages = 0;
 		unreadmsgusers = [];
-		document.title = "talkbox";
+		document.title = "talkbox"; //TODO move to settings
+		stopAlert && stopAlert();
+		stopAlert = null;
 	});
 	//s$('button').click();
 });

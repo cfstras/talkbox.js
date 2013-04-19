@@ -47,6 +47,7 @@
 		"settings.js",
 		"xmpp.js",
 		"package.json",
+		"settings.default.json",
 		"Readme.md"
 	],
 	"main": "talkbox.js",
