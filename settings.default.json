@@ -1,0 +1,20 @@
+{
+  "site": {
+    "title": "talkbox",
+    "colors": 0.5,
+    "oEmbed": true,
+    "style": "client.css"
+  },
+  "xmpp": {
+    "jid": "user@jabber.server.tld",
+    "password": "secret",
+    "host": "jabber.server.tld",
+    "port": 5222,
+    "friends": {
+      "otherguy@jabber.server.tld.REPLACEME": {
+        "alias": "otherguy",
+        "thread": "main"
+      }
+    }
+  }
+}

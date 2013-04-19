@@ -1,26 +1,7 @@
 var fs = require('fs');
 
-var defaults = {
-	site:	{
-		title:	"talkbox",
-		colors:	0.5,
-		oEmbed:	true,
-		style:	'client.css'
-	},
-	xmpp:	{
-		jid:			'user@jabber.server.tld',
-		password:	'secret',
-		host:			'jabber.server.tld',
-		port:			5222,
-		friends: {
-			'otherguy@jabber.server.tld': {
-				alias:	'otherguy',
-				thread:	'main'
-			}
-		}
-	}
-};
-
+var deftext = fs.readFileSync('settings.default.json',{encoding: 'utf8'});
+var defaults = JSON.parse(deftext);
 
 deepClone = function(object) {
 	return JSON.parse(JSON.stringify(object));
@@ -45,8 +26,6 @@ deepAddAll = function(object, other){
 	}
 	return changed;
 }
-
-
 
 var read;
 var err;
