@@ -38,7 +38,7 @@ function Client(socket) {
 				date: new Date()
 			});	
 		} else {
-			if(name_regex.test(data.name)) {
+			if(name_regex.test(data.name) && data.name !== "server") {
 				var old = self.name;
 				console.info('user rename: '+old+' -> '+data.name);
 				self.name = data.name;
