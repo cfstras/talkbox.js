@@ -109,12 +109,6 @@ function Client(socket) {
 			name: 'server',
 			server: true,
 			date: new Date()});
-		sendAll('msg',{
-			text: 'user ' + self.name
-			+ ' joined channel.',
-			name: 'server',
-			server: true,
-			date: new Date()});
 		self.sock.emit('userlist',make.userlist());
 	};
 	this.newAuth = function() {
