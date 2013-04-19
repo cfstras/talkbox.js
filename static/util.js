@@ -16,6 +16,23 @@ findIndexById = function(arr,id) {
 	return -1;
 };
 
+AlertUnread = function(alertInfo) {
+  var intervalId = document.title;
+  var oldTitle = alertInfo.oldTitle;
+  var timeout = 1500; //TODO: move to settings
+  intervalId = setInterval(function(){
+    var msg = alertInfo.msgs + " new messages from " + alertInfo.users + " users.";
+    document.title = document.title === msg ? oldTitle : msg;
+    }, timeout);
+  return function() {
+    if(oldTitle) {
+      clearInterval(intervalId);
+      document.title = oldTitle;
+      oldTitle = null;
+    }
+  };
+};
+
 jQuery.fn.extend({
 insertAtCaret: function(myValue){
   return this.each(function(i) {

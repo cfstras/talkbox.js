@@ -28,7 +28,10 @@ var notificationsSupported = false;
 var notificationsEnabled = false;
 var windowFocused = true;
 var unreadmessages = 0;
+var unreadusers = 0;
 var unreadmsgusers = [];
+var stopAlert = null;
+var alertInfo = {};
 
 function initClient() {
 	notificationsSupported = !!window.Notification;
@@ -74,7 +77,7 @@ function requestNotificationPerm() {
 	Notification.requestPermission(checkNotificationPerm);
 }
 
-function onMsg(data) {
+function onMsg(data) { 
 	console.log(data);
 	addMessage(data);
 	if(windowFocused) {
@@ -85,12 +88,13 @@ function onMsg(data) {
 		}
 		if(!data.server) {
 			unreadmessages++;
-		}
-		var usercount = unreadmsgusers.length;
-		if(unreadmessages > 0) {
-			document.title = unreadmessages+" from "+ usercount +" users.";
-		} else {
-			document.title = "talkbox";
+			unreadusers = unreadmsgusers.length;
+			alertInfo.msgs = unreadmessages;
+			alertInfo.users = unreadusers;
+			alertInfo.oldTitle = "talkbox";//TODO: move to settings
+			stopAlert && stopAlert();
+			document.title = "talkbox";	
+			stopAlert = AlertUnread(alertInfo);
 		}
 	}
 }
@@ -319,6 +323,11 @@ $(document).ready(function() {
 	$(window).blur(function(){
 		windowFocused = false;
 		console.log("unfocus");
+		if(unreadmessages == null) {
+			if(stopAlert != null) {
+				stopAlert();
+			}
+		}
 	}).focus(function() {
 		windowFocused = true;
 		console.log("focus");
