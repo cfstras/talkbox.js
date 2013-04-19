@@ -1,5 +1,5 @@
-var sanitize = require('validator').sanitize;
-var marked = require('marked');
+var sanitize = require('validator').sanitize,
+	marked = require('marked');
 
 function Make(clients) {
 	this.clients = clients;
@@ -32,10 +32,10 @@ function Make(clients) {
 	};
 	
 	this.msg = function(client, data) {
-		if (!data || data.text===undefined)
+		if (!data || data.text === undefined)
 			return undefined;
 		data.text = data.text.trim();
-		if(!marked.parser(marked.lexer(data.text)))
+		if(!marked(data.text))
 			return false;
 		return m = {
 			id: client.id,

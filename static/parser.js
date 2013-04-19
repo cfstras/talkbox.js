@@ -1,5 +1,6 @@
 var urlregex = /(\b[A-z]+:\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
 
+//TODO do we still use this??
 function parse(msg) {
 	//linkify
 	return linkify(msg);

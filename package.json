@@ -24,12 +24,15 @@
 		"static/util.js",
 		"static/marked.js",
 		"static/parser.js",
-		"jquery.oembed.js",
+		"static/jquery.oembed.js",
 		"LICENSE",
 		".gitignore",
 		"talkbox.js",
 		"client.js",
+		"color.js",
 		"make.js",
+		"settings.js",
+		"xmpp.js",
 		"package.json",
 		"Readme.md"
 	],
@@ -44,3 +47,4 @@
 	},
 	"scripts": {"start": "node talkbox.js"}
 }
+
