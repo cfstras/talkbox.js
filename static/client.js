@@ -166,11 +166,6 @@ function onWelcome(data) {
 
 function onDisconnect() {
 	overlayMsg("disconnected");
-	addMessage({
-		name: 'error',
-		server: true,
-		text: 'disconnected from server',
-		date: new Date()});
 	$('#userlist .inner').fadeOut(200).empty();
 }
 

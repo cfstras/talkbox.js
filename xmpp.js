@@ -85,13 +85,6 @@ XMPP.prototype.handleBuddy = function(jid, state, statusText) {
 			this.libClient.clients.push(client);
 			this.libClient.sendAll('userjoin',
 				this.libClient.make.userToSend(client));
-			this.libClient.sendAll('msg',{
-				text: 'user ' + client.name + ' joined channel'+
-					(statusText ? ': '+sanitize(statusText.trim())
-					.escape() : ''),
-				name: 'server',
-				server: true,
-				date: new Date()});
 			console.log('xmpp: join',jid,state,statusText);
 		}
 	} else {
