@@ -28,8 +28,6 @@ var notificationsSupported = false;
 var notificationsEnabled = false;
 var windowFocused = true;
 
-var converter = new Markdown.Converter();
-
 function initClient() {
 	notificationsSupported = !!window.Notification;
 	if (notificationsSupported) {
@@ -158,7 +156,7 @@ addMessage = function(data) {
 		
 		+ '<span class="name'+(data.server?' server':'') + '">'
 		+ data.name + ':</span>'
-		+ '<span class="text">' + converter.makeHtml(data.text) + '</span>'
+		+ '<span class="text">' + marked.parser(marked.lexer(data.text)) + '</span>'
 		+ '<span class="right">' + date.toLocaleTimeString() + '</span>'
 		+ '</div>')
 		.appendTo('#msgs #inner')
