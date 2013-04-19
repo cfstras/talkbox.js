@@ -151,8 +151,6 @@ var sendAll = function(type, message) {
 };
 
 var sendDisconnectMsg = function(id, name) {
-	sendAll('msg', make.serverMsg('disconnect',
-		'user ' + name + ' left the thread.'));
 	sendAll('userleave', {
 		id: id,
 		name: name});
