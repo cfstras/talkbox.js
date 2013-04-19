@@ -1,53 +1,61 @@
 var sanitize = require('validator').sanitize;
 var xmpp = require('simple-xmpp');
 
-var friends = ['claus.ferdinand@gmail.com'];
-var libClient;
+var libClient, settings;
 
-function init(_client, _friends) {
+function init(_client, _settings) {
 	libClient = _client;
-	friends = friends.concat(_friends);
+	settings = _settings;
 	
 	xmpp.on('online', function() {
-		console.log('Yes, I\'m connected!');
+		console.log('xmpp: connected '+settings.xmpp.jid);
 	});
-
+	
 	xmpp.on('chat', function(from, message) {
+		var name = from;
+		if(settings.xmpp.friends && settings.xmpp.friends[from]) {
+			name = settings.xmpp.friends[from].alias;
+		}
 		libClient.sendAll('msg',{
 			id: 'xmpp',
-			name: from,
+			name: name,
 			text: sanitize(message.trim())
 				.escape()
 				.replace(/(\r\n|\n|\r)/gm, '<br />\n'),
 			date: new Date(),
 		});
-		xmpp.send(from, 'echo: ' + message);
 	});
-
+	
 	xmpp.on('error', function(err) {
 		console.error(err);
 	});
-
+	
 	xmpp.on('subscribe', function(from) {
-		console.log('auth from',from);
-		if (friends.indexOf(from) != -1) {
-			console.log('he is my friend.')
+		console.log('xmpp: auth from',from);
+		if (settings.xmpp.friends
+		&& settings.xmpp.friends.hasOwnProperty(from)) {
+			console.log('xmpp:',settings.xmpp.friends[from.alias],'is my friend.')
 			xmpp.acceptSubscription(from);
 		}
 	});
-
-	xmpp.connect({
-		jid         : 'talkbox.js.test@jabber.systemli.org',
-		password    : 'insert your password here, motherfucker',
-		host        : 'jabber.systemli.org',
-		port        : 5222
-	});
-
-	xmpp.subscribe('claus.ferdinand@gmail.com');
-	// check for incoming subscription requests
-	xmpp.getRoster();
+	
+	if(settings.xmpp) {
+		console.log('xmpp: connecting',settings.xmpp.jid);
+		xmpp.connect(settings.xmpp);
+		var friends = settings.xmpp.friends;
+		if(friends) {
+			for(k in friends) {
+				if(friends.hasOwnProperty(k)) {
+					console.log('xmpp: xmpp adding '+friends[k].alias+' <'+k+'>');
+					xmpp.subscribe(k);
+				}
+			}
+		}
+		// check for incoming subscription requests
+		xmpp.getRoster();
+	} else {
+		console.log('xmpp: no settings found.');
+	}
 }
-
-
 
 module.exports.init = init;

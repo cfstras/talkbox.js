@@ -124,7 +124,6 @@ function Client(socket) {
 			auths.push(auth);
 			self.auth = auth;
 			self.welcome();
-			//TODO?
 		});
 	};
 	
@@ -141,7 +140,6 @@ function Client(socket) {
 	
 	this.sock.on('disconnect', this.handleDisconnect);
 }
-
 
 var sendAll = function(type, message) {
 	for(i in clients) {

@@ -12,35 +12,34 @@ var defaults = {
 		password:	'secret',
 		host:			'jabber.server.tld',
 		port:			5222,
-		friends: [
-			{
-				jid:		'otherguy@jabber.server.tld',
+		friends: {
+			'otherguy@jabber.server.tld': {
 				alias:	'otherguy',
 				thread:	'main'
 			}
-		]
+		}
 	}
 };
 
 
-Object.prototype.deepClone = function() {
-	return JSON.parse(JSON.stringify(this));
+deepClone = function(object) {
+	return JSON.parse(JSON.stringify(object));
 }
 
-Object.prototype.deepAddAll = function(other){
+deepAddAll = function(object, other){
 	var changed = 0;
 	for(var i in other) {
 		if(typeof other[i] === 'object') {
-			if(typeof this[i] !== 'object') {
+			if(typeof object[i] !== 'object') {
 				changed++;
-				this[i] = other[i].deepClone();
+				object[i] = deepClone(other[i]);
 			} else {
-				changed += this[i].deepAddAll(other[i]);
+				changed += deepAddAll(object[i],other[i]);
 			}
 		} else {
-			if(other.hasOwnProperty(i) && !this.hasOwnProperty(i)) {
+			if(other.hasOwnProperty(i) && !object.hasOwnProperty(i)) {
 				changed++;
-				this[i] = other[i].deepClone();
+				object[i] = deepClone(other[i]);
 			}
 		}
 	}
@@ -68,7 +67,7 @@ if(!err) {
 	var settings = JSON.parse(read);
 
 	// copy new values over
-	var changed = settings.deepAddAll(defaults);
+	var changed = deepAddAll(settings,defaults);
 	if(changed > 0){
 		console.log(changed,'new settings added to config');
 		fs.writeFileSync('settings.json', JSON.stringify(settings, "  ", "  "));

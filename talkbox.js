@@ -5,18 +5,18 @@ var connect = require('connect'),
 	fs = require('fs'),
 	repl = require('repl');
 
-var libClient = require('./client'),
-	xmpp = require('./xmpp'),
-	settings = require('./settings');
+var settings = require('./settings'),
+	libClient = require('./client'),
+	xmpp = require('./xmpp');
 
 io.set('log level', 1);
 app.listen(80);
 
 io.sockets.on('connection', function(socket) {
-	var c = new libClient.Client(socket);
+	var c = new libClient.Client(socket, settings);
 });
 
-xmpp.init(libClient,[]);
+xmpp.init(libClient,settings);
 
 var sh = repl.start("talkbox >");
 sh.context.reloadAll = libClient.reloadAll;
@@ -25,4 +25,6 @@ sh.context.sendAll = libClient.sendAll;
 sh.context.io = io;
 sh.context.clients = libClient.clients;
 sh.context.auths = libClient.auths;
+sh.context.settings = settings;
+sh.context.xmpp = xmpp;
 
