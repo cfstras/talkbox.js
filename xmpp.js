@@ -1,4 +1,6 @@
-var sanitize = require('validator').sanitize;
+var sanitize = require('validator').sanitize,
+	base64id = require('base64id');
+	
 var lib = require('simple-xmpp');
 
 function XMPP(libClient, settings) {
@@ -9,7 +11,6 @@ function XMPP(libClient, settings) {
 	lib.on('error', this.handleError.bind(this));
 	lib.on('subscribe', this.handleSubscribe.bind(this));
 	lib.on('buddy', this.handleBuddy.bind(this));
-	this.send = this.send.bind(this);
 	this.clients = {};
 	if(this.settings) {
 		console.log('xmpp: connecting',this.settings.jid);
@@ -36,12 +37,14 @@ XMPP.prototype.handleOnline = function() {
 
 XMPP.prototype.handleChat = function(from, message) {
 	var name = from;
-	if(this.settings.friends && this.settings.friends[from]) {
-		name = this.settings.friends[from].alias;
+	var client = this.clients[from];
+	if(!client) {
+		console.log('xmpp: message from unknown ignored:',from);
+		return
 	}
 	this.libClient.sendAll('msg',{
-		id: 'xmpp:'+from,
-		name: name,
+		id: client.id,
+		name: client.name,
 		text: sanitize(message.trim())
 			.escape()
 			.replace(/(\r\n|\n|\r)/gm, '<br />\n'),
@@ -56,23 +59,76 @@ XMPP.prototype.handleError = function(err) {
 XMPP.prototype.handleSubscribe = function(from) {
 	console.log('xmpp: auth from',from);
 	if (this.settings.friends
-	&& this.settings.friends.hasOwnProperty(from)) {
+	&& this.settings.friends.hasOwnProperty(from)
+	&& this.settings.friends[from].alias) {
 		console.log('xmpp:',this.settings.friends[from].alias,'is my friend.')
 		lib.acceptSubscription(from);
 	}
 };
 
 XMPP.prototype.handleBuddy = function(jid, state, statusText) {
-	console.log('xmpp: buddy',jid,state,statusText);
-	//if(!this.clients[])
+	//console.log('xmpp: buddy',jid,state,statusText);
+	var client = this.clients[jid];
+	var friend = this.settings.friends[jid];
+	if(!friend || !friend.alias) {
+		//console.log('xmpp: ignoring state from not-friend',jid,state);
+		return;
+	}
+	if(!client) {
+		client = this.clients[jid] = new XMPPClient(
+			this,jid,
+			this.settings.friends[jid].alias);
+	}
+	if(this.libClient.clients.indexOf(client) === -1) {
+		if(state !== lib.STATUS.OFFLINE) {
+			// logged in
+			this.libClient.clients.push(client);
+			this.libClient.sendAll('userjoin',
+				this.libClient.make.userToSend(client));
+			this.libClient.sendAll('msg',{
+				text: 'user ' + client.name + ' joined channel'+
+					(statusText ? ': '+sanitize(statusText.trim())
+					.escape() : ''),
+				name: 'server',
+				server: true,
+				date: new Date()});
+			console.log('xmpp: join',jid,state,statusText);
+		}
+	} else {
+		if(state === lib.STATUS.OFFLINE) {
+			//logged off
+			var i = this.libClient.clients.indexOf(client)
+			if(i != -1) {
+				this.libClient.clients.splice(i,1)
+				this.libClient.sendDisconnectMsg(client.id, client.name);
+			} else {
+				
+			}
+			console.log('xmpp: leave',jid,state,statusText);
+		}
+	}
+	client.status = state;
+	
 };
 
-XMPP.prototype.send = function(type, message) {
+function XMPPClient(parent,jid,alias) {
+	this.parent = parent;
+	this.status = lib.OFFLINE;
+	this.name = alias+':xmpp';
+	this.jid = jid;
+	this.id = base64id.generateId();
+	this.send = this.send.bind(this);
+}
+
+XMPPClient.prototype.send = function(type, message) {
 	var msgFrom = message.name;
 	var msgText = message.text;
 	
 	if(type ==='msg') {
 		// nothing to do
+		if(message.id === this.id) {
+			return;
+		}
 	} else if(type ==='userjoin') { 
 		// nothing to do, xmpp has no userlist
 		return
@@ -88,25 +144,9 @@ XMPP.prototype.send = function(type, message) {
 		console.error('xmpp: unknown message',type,message);
 		return;
 	}
-	var msg = '['+msgFrom+'] '+msgText;
-	var friends = this.settings.friends;
-	for(k in friends) {
-		if(friends.hasOwnProperty(k)
-		&& message.id !== 'xmpp:'+k) {
-			var msg = '['+message.name+'] '+message.text;
-			lib.send(k, msg);
-		}
-	}
+	var msg = '['+message.name+'] '+message.text;
+	lib.send(this.jid, msg);
 };
-
-function XMPPClient(parent,jid,alias) {
-	this.parent = parent;
-	this.status = lib.OFFLINE;
-	this.name = alias+':xmpp';
-	this.jid = jid;
-	this.id = 'xmpp:'+jid;
-	//this.libClient.clients.push(this);
-}
 
 module.exports = XMPP;
 

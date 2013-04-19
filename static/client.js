@@ -122,7 +122,7 @@ setUserlist = function(data) {
 	$('#userlist .inner').fadeIn(50);
 	userlist = data;
 	$('#userlist .inner .user').each(function(i, el) {
-		user = findById(userlist, el.id);
+		var user = findById(userlist, el.id);
 		if (user === null) {
 			$(this).animate({
 				opacity: 0
@@ -132,7 +132,7 @@ setUserlist = function(data) {
 		}
 	});
 	for(i in userlist) {
-		if ($('#userlist .inner #'+userlist[i].id)
+		if ($('#userlist .inner #'+userlist[i].id.replace(/[:\.@]/g,'__'))
 			.length===0) {
 			makeUserEl(userlist[i])
 			.appendTo('#userlist .inner')
@@ -143,7 +143,7 @@ setUserlist = function(data) {
 	}
 };
 makeUserEl = function(user) {
-	return $('<span class="user" id="' + user.id
+	return $('<span class="user" id="' + user.id.replace(/[:\.@]/g,'__')
 				+ '" style="opacity: 0;">'
 				+ user.name + '</span>');
 }
