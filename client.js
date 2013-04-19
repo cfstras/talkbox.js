@@ -32,28 +32,37 @@ function Client(socket) {
 		}
 		data.name = data.name.trim()
 			.replace(/<.*>/gm,"");
-		if(name_regex.test(data.name)) {
-			var old = self.name;
-			console.info('user rename: '+old+' -> '+data.name);
-			self.name = data.name;
-			if(self.auth) {
-				self.auth.name = self.name;
-				sendAll('ren', {
-					id: self.id,
-					oldName: old,
-					name: self.name,
-					msg: make.serverMsg('ren',
-						old + ' is now known as '
-							+ self.name),
-					});
-			}
-		} else {
+		if(userExists(data.name)) {
 			self.sock.emit('err', {
 				type: 'name',
-				text: 'Invalid nickname format, allowed symbols: '
-				+ '<pre>'+name_symbols+'</pre>, length '+name_minLen+' - '+name_maxLen,
+				text: 'This nickname is already taken!',
 				date: new Date()
 			});
+		} else {
+			if(name_regex.test(data.name) && data.name !== "server") {
+				var old = self.name;
+				console.info('user rename: '+old+' -> '+data.name);
+				self.name = data.name;
+				if(self.auth) {
+					self.auth.name = self.name;
+					sendAll('ren', {
+						id: self.id,
+						name: self.name,
+						msg: make.serverMsg('ren',
+							old + ' is now known as '
+								+ self.name),
+						});
+					// if there is no auth object, he isn't logged in
+					// --> no need to inform others
+				}
+			} else {
+				self.sock.emit('err', {
+					type: 'name',
+					text: 'Invalid nickname format, allowed symbols: '
+					+ '<pre>'+name_symbols+'</pre>, length '+name_minLen+' - '+name_maxLen,
+					date: new Date()
+				});
+			}
 		}
 	};
 	this.handleAuth = function(data) {
@@ -175,6 +184,14 @@ var findId = function(arr,id) {
 var addr2string = function(addr) {
 	return addr.address+':'+addr.port;
 };
+
+var userExists = function(newname) {
+	for(key in clients) {
+		if(clients[key].name === newname)
+			return true;
+	}
+	return false;
+} 
 
 module.exports.Client = Client;
 module.exports.clients = clients;
