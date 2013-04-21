@@ -34,7 +34,7 @@ try {
 } catch (e) {
 	err = e;
 	if(e.code === 'ENOENT') { // File not found
-		fs.writeFileSync('settings.json', JSON.stringify(defaults, "  ", "  "));
+		fs.writeFileSync('settings.json', JSON.stringify(defaults, null, "\t"));
 		settings = defaults;
 		console.log('Writing new settings.json file.');
 	} else {
@@ -49,7 +49,7 @@ if(!err) {
 	var changed = deepAddAll(settings,defaults);
 	if(changed > 0){
 		console.log(changed,'new settings added to config');
-		fs.writeFileSync('settings.json', JSON.stringify(settings, "  ", "  "));
+		fs.writeFileSync('settings.json', JSON.stringify(settings, null, "\t"));
 	}
 }
 
