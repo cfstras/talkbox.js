@@ -30,8 +30,7 @@ function Client(socket) {
 			self.sock.emit('msg', make.serverMsg('msg','Invalid Message.'));
 			return;
 		}
-		data.name = data.name.trim()
-			.replace(/<.*>/gm,"");
+		data.name = data.name.trim();
 		if(userExists(data.name)) {
 			self.sock.emit('err', {
 				type: 'name',

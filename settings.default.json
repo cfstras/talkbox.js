@@ -6,13 +6,15 @@
     "style": "client.css"
   },
   "xmpp": {
+    "__comment": "Enter the XMPP info for your client here",
     "jid": "user@jabber.server.tld",
     "password": "secret",
     "host": "jabber.server.tld",
     "port": 5222,
     "friends": {
-      "otherguy@jabber.server.tld.REPLACEME": {
-        "alias": "otherguy",
+      "__comment" : "an alias of null will cause the item to be ignored",
+      "otherguy@jabber.server.tld": {
+        "alias": null,
         "thread": "main"
       }
     }

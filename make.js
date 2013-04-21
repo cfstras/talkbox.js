@@ -40,9 +40,7 @@ function Make(clients) {
 		return m = {
 			id: client.id,
 			name: client.name,
-			text: sanitize(data.text)
-				.escape()
-				.replace(/(\r\n|\n|\r)/gm, '<br />\n'),
+			text: data.text,
 			date: new Date(),
 		};
 	};

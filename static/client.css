@@ -22,9 +22,10 @@ body {
 	overflow: hidden;
 }
 .message .name {
-	/*float: left;*/
+	float: left;
 	color: #888;
 	padding-right: 0.3em;
+	background-color: #eee;
 }
 .message .server {
 	color: rgb(197, 75, 75);
@@ -34,12 +35,16 @@ body {
 	word-wrap: break-word;
 	max-width: 100%;
 }
+.message .text:after {
+	clear: both;
+}
 .message .text pre {
-	display: inline;
+	background: #ddd;
+}
+.message .text code {
 	background: #ddd;
 }
 .message .text p {
-	display: inline;
 }
 .message .right {
 	float: right;

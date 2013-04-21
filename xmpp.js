@@ -1,5 +1,4 @@
-var sanitize = require('validator').sanitize,
-	base64id = require('base64id'),
+var base64id = require('base64id'),
 	lib = require('simple-xmpp'),
 	color = require('./color');
 
@@ -18,7 +17,7 @@ function XMPP(libClient, settings) {
 		var friends = this.settings.friends;
 		if(friends) {
 			for(k in friends) {
-				if(friends.hasOwnProperty(k)) {
+				if(friends.hasOwnProperty(k) && friends[k].alias) {
 					console.log('xmpp: xmpp adding '+friends[k].alias+' <'+k+'>');
 					lib.subscribe(k);
 				}
@@ -40,14 +39,12 @@ XMPP.prototype.handleChat = function(from, message) {
 	var client = this.clients[from];
 	if(!client) {
 		console.log('xmpp: message from unknown ignored:',from);
-		return
+		return;
 	}
 	this.libClient.sendAll('msg',{
 		id: client.id,
 		name: client.name,
-		text: sanitize(message.trim())
-			.escape()
-			.replace(/(\r\n|\n|\r)/gm, '<br />\n'),
+		text: message.trim(),
 		date: new Date()
 	});
 };
@@ -67,7 +64,6 @@ XMPP.prototype.handleSubscribe = function(from) {
 };
 
 XMPP.prototype.handleBuddy = function(jid, state, statusText) {
-	//console.log('xmpp: buddy',jid,state,statusText);
 	var client = this.clients[jid];
 	var friend = this.settings.friends[jid];
 	if(!friend || !friend.alias) {
@@ -85,13 +81,7 @@ XMPP.prototype.handleBuddy = function(jid, state, statusText) {
 			this.libClient.clients.push(client);
 			this.libClient.sendAll('userjoin',
 				this.libClient.make.userToSend(client));
-			this.libClient.sendAll('msg',{
-				text: 'user ' + client.name + ' joined channel'+
-					(statusText ? ': '+sanitize(statusText.trim())
-					.escape() : ''),
-				name: 'server',
-				server: true,
-				date: new Date()});
+			//TODO send 'join' event
 			console.log('xmpp: join',jid,state,statusText);
 		}
 	} else {
@@ -100,15 +90,15 @@ XMPP.prototype.handleBuddy = function(jid, state, statusText) {
 			var i = this.libClient.clients.indexOf(client)
 			if(i != -1) {
 				this.libClient.clients.splice(i,1)
-				this.libClient.sendDisconnectMsg(client.id, client.name);
+				//TODO send 'leave' event
 			} else {
-				
+				// logged off but wasn't logged on.
 			}
 			console.log('xmpp: leave',jid,state,statusText);
 		}
 	}
 	client.status = state;
-	
+	console.info('xmpp: buddy',jid,state,'status:',statusText);
 };
 
 function XMPPClient(parent,jid,alias) {
@@ -134,7 +124,7 @@ XMPPClient.prototype.send = function(type, message) {
 		// nothing to do, xmpp has no userlist
 		return
 	} else if(type ==='ren') { 
-		msgFrom = message.msg.name;
+		msgFrom = 'server';
 		msgText = message.msg.text;
 	} else if(type ==='userleave') { 
 		// nothing to do, xmpp has no userlist

@@ -44,6 +44,17 @@ function initClient() {
 		}
 		checkNotificationPerm(perm);
 	}
+	
+	//init marked
+	marked.setOptions({
+		gfm: true,
+		tables: true,
+		breaks: true,
+		pedantic: true,
+		sanitize: true,
+		smartLists: true,
+		langPrefix: 'lang-'
+	});
 }
 
 function checkNotificationPerm(perm) {
@@ -193,11 +204,11 @@ function addMessage(data) {
 	var user = findById(userlist, data.id);
 	var d = $('<div class="message'
 		+ '" style="opacity: 0;">'
+		+ '<span class="right">' + date.toLocaleTimeString() + '</span>'
 		+ '<span class="name'+(data.server?' server' : '') + '" '
 		+ (user && user.color?'style="color:'+user.color+'"' : '') +'>'
 		+ data.name + ':</span>'
 		+ '<span class="text">' + marked(data.text) + '</span>'
-		+ '<span class="right">' + date.toLocaleTimeString() + '</span>'
 		+ '</div>')
 		.appendTo('#msgs #inner')
 		.animate({
