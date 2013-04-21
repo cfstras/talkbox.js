@@ -108,12 +108,6 @@ function Client(socket) {
 			name: 'server',
 			server: true,
 			date: new Date()});
-		sendAll('msg',{
-			text: 'user ' + self.name
-			+ ' joined channel.',
-			name: 'server',
-			server: true,
-			date: new Date()});
 		self.sock.emit('userlist',make.userlist());
 	};
 	this.newAuth = function() {
@@ -156,8 +150,6 @@ var sendAll = function(type, message) {
 };
 
 var sendDisconnectMsg = function(id, name) {
-	sendAll('msg', make.serverMsg('disconnect',
-		'user ' + name + ' left the thread.'));
 	sendAll('userleave', {
 		id: id,
 		name: name});
