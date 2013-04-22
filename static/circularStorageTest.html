@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="circularLocalStorage.js"></script>
+<title>Test</title>
+<script>
+$(document).ready(function() {
+	buf = new Buffer('teststore',11);
+	buf.push("First Element<br>");
+	$('#out').append(buf.get());
+	buf.push("Second Element<br>");
+	$('#out').append(buf.get(0));
+	// now get the element inserted before the last one
+	$('#out').append(buf.get(1));
+});
+</script>
+</head>
+<body>
+<div id="out"></div>
+</body>
+</html>
