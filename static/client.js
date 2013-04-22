@@ -33,6 +33,8 @@ var unreadmsgusers = [];
 var stopAlert = null;
 var alertInfo = {};
 
+var buf = new Buffer('msgstore',11);
+
 function initClient() {
 	notificationsSupported = !!window.Notification;
 	if (notificationsSupported) {
@@ -90,6 +92,8 @@ function requestNotificationPerm() {
 
 function onMsg(data) {
 	console.log(data);
+	if(!data.server)
+		buf.push(data);
 	addMessage(data);
 	if(windowFocused) {
 		//do nothing
@@ -357,4 +361,7 @@ $(document).ready(function() {
 		stopAlert = null;
 	});
 	//s$('button').click();
+	if(buf.getLength() > 0) {
+		buf.forEach(addMessage);
+	}
 });
