@@ -1,7 +1,7 @@
 var connect = require('connect'),
 	http = require('http'),
 	app = http.createServer(connect().use(connect.static(
-		__dirname+'/static',
+		__dirname+'/../static',
 		{redirect: true, maxAge: 1000}))),
 	io = require('socket.io').listen(app),
 	fs = require('fs'),

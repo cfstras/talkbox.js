@@ -17,6 +17,7 @@ function Make(clients) {
 
 	this.userlist = function() {
 		var list = [];
+		list.type = 'userlist';
 		for(i in self.clients) {
 			list.push(self.userToSend(clients[i]));
 		}
@@ -25,23 +26,9 @@ function Make(clients) {
 	
 	this.userToSend = function(client) {
 		return {
-			id: client.id,
+			uid: client.uid,
 			name: client.name,
 			color: client.color
-		};
-	};
-	
-	this.msg = function(client, data) {
-		if (!data || data.text === undefined)
-			return undefined;
-		data.text = data.text.trim();
-		if(!marked(data.text))
-			return false;
-		return m = {
-			id: client.id,
-			name: client.name,
-			text: data.text,
-			date: new Date(),
 		};
 	};
 

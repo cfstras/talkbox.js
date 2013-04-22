@@ -1,30 +1,21 @@
 var crypto = require('crypto'),
 	check = require('validator').check;
 	
-var clients = [];
-var auths = [];
 
 var Make = require('./make');
 var make = new Make(clients);
 var color = require('./color');
 
-var name_regex = /^[A-Za-zäöü0-9-_\.	]{3,30}$/;
-var name_symbols = 'A-Z a-z äöü 0-9 - _ \.';
-var name_minLen = 3;
-var name_maxLen = 30;
-
-function Client(socket) {
+function Client(clienthandler, socket) {
+	this.send = this.send.bind(this);
+	this.handleDisconnect = this.handleDisconnect.bind(this);
 	var self = this;
+	this.clienthandler = clienthandler;
+	
 	this.handleMsg = function(data) {
-		var message = make.msg(self, data);
-		if(message === undefined) {
-			self.sock.emit('msg', make.serverMsg('msg','Invalid Message.'));
-		} else if(message === false) {
-			return;
-		} else {
-			sendAll('msg',message);
-		}
-	};
+		clienthandler.handleMsg(this,data.text);
+	}.bind(this);
+	
 	this.handleRen = function(data) {
 		if(!data.name) {
 			self.sock.emit('msg', make.serverMsg('msg','Invalid Message.'));
@@ -64,6 +55,7 @@ function Client(socket) {
 			}
 		}
 	};
+	
 	this.handleAuth = function(data) {
 		if(!data.secret) {
 			self.newAuth();
@@ -82,15 +74,11 @@ function Client(socket) {
 			}
 		}
 	};
+	
 	this.handleDisconnect = function() {
-		console.info('disconnect: from '
-			+ addr2string(self.sock.handshake.address));
-		var i = clients.indexOf(self)
-		if(i != -1) {
-			clients.splice(i,1)
-			sendDisconnectMsg(self.id, self.name);
-		} // else: he was not logged in.
+		this.clientHandler.disconnect(this);
 	};
+	
 	this.welcome = function() {
 		sendAll('userjoin',make.userToSend(self));
 		self.auth.login = new Date();
@@ -124,9 +112,6 @@ function Client(socket) {
 			self.welcome();
 		});
 	};
-	this.send = function(type, message) {
-		self.sock.emit(type, message);
-	};
 	
 	console.info('incoming connection from '
 		+ addr2string(socket.handshake.address));
@@ -143,24 +128,16 @@ function Client(socket) {
 	this.sock.on('disconnect', this.handleDisconnect);
 }
 
-var sendAll = function(type, message) {
-	clients.forEach(function(c){
-		c.send(type, message);
-	});
+Client.prototype.send = function(msg) {
+	this.sock.emit(msg.type, msg);
 };
 
 var sendDisconnectMsg = function(id, name) {
-	sendAll('userleave', {
-		id: id,
-		name: name});
+	
 };
 
 var reloadAll = function() {
 	sendAll('reload', {});
-};
-
-var sendUserlist = function(socket) {
-	clients[i].sock.emit('userlist', makeUserlist());
 };
 
 var findId = function(arr,id) {
