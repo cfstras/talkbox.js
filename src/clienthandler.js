@@ -1,4 +1,5 @@
-var marked = require('marked');
+var marked = require('marked'),
+	base64id = require('base64id');
 
 var color = require('./color'),
 	Make = require('./make');
@@ -17,6 +18,9 @@ function ClientHandler(settings) {
 	this.sendAll = this.sendAll.bind(this);
 	this.disconnect = this.disconnect.bind(this);
 	this.sendUserlist = this.sendUserlist.bind(this);
+	this.rename = this.rename.bind(this);
+	this.getUserByName = this.getUserByName.bind(this);
+	this.welcome = this.welcome.bind(this);
 	
 	this.make = new Make(this.clients);
 	this.clients = [];
@@ -68,4 +72,71 @@ ClientHandler.prototype.sendUserlist = function(client) {
 	func(this.make.userlist());
 }
 
+ClientHandler.prototype.newAuth = function(client) {
+	var auth = {
+		uid: base64id.generateId(),
+		secret = base64id.generateId(),
+		name: client.name
+	};
+	console.info('user', auth.name, 'gets new auth');
+	this.auths.push(auth);
+	client.auth = auth;
+	this.welcome(client);
+};
+
+ClientHandler.prototype.rename = function(client, newName) {
+	if(!newName) {
+		this.send(client, make.serverMsg('msg','Invalid Message.'));
+		return;
+	}
+	newName = newName.trim();
+	if(this.getUserByName(newName)) {
+		this.send(client, make.serverMsg('msg','This nickname is already taken!'));
+		return;
+	}
+	if(name_regex.test(newName) && newName !== "server") {
+		var old = client.name;
+		console.info('rename: '+old+' -> '+newName);
+		client.name = newName;
+		if(client.auth) {
+			client.auth.name = newName;
+			this.sendAll('ren', make.userToSend(client));
+			this.sendAll(make.serverMsg('msg', old + ' is now known as ' + newName));
+			// if there is no auth object, he isn't logged in
+			// --> no need to inform others
+		}
+	} else {
+		this.send(client,make.serverMsg('Invalid nickname format, allowed symbols: '
+			+ '<pre>'+name_symbols+'</pre>, length '+name_minLen+' - '+name_maxLen);
+	}
+};
+
+ClientHandler.prototype.welcome = function(client) {
+	var join = this.make.userToSend(client)
+	join.type = 'userjoin';
+	this.sendAll(join);
+	
+	client.auth.login = new Date();
+	this.clients.push(client);
+	console.info('join:',client);
+	
+	var welcome = this.make.userToSend(client);
+	welcome.secret = client.auth.secret;
+	welcome.type = 'welcome';
+	this.send(client,welcome);
+	
+	this.send(client, this.serverMsg('msg',
+		'welcome, ' + client.name + '! To change your nick, use'
+		+ ' /nick thisIsANewNickname'));
+	
+	this.sendUserlist(client);
+};
+
+ClientHandler.prototype.getUserByName = function(name) {
+	for(i in clients) {
+		if(clients[i].name === name)
+			return clients[i];
+	}
+	return null;
+}
 
