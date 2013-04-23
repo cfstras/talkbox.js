@@ -8,31 +8,11 @@ var color = require('./color');
 
 function Client(clientHandler, socket) {
 	this.send = this.send.bind(this);
-	this.handleDisconnect = this.handleDisconnect.bind(this);
 	this.handleAuth = this.handleAuth.bind(this);
 	this.handleRen = this.handleRen.bind(this);
 	this.handleMsg = this.handleMsg.bind(this);
 	
 	this.clientHandler = clientHandler;
-	
-	this.handleAuth = function(data) {
-		if(!data.secret) {
-			self.newAuth();
-		} else {
-			self.name = data.name;
-			self.auth = findId(auths,data.secret);
-			if(self.auth) {
-				//TODO check if username is valid
-				self.name = data.name;
-				self.auth.name = data.name;
-				self.welcome();
-			} else {
-				console.info('auth '+data.secret.substring(0,7)
-				 + '.. for user '+data.name+' not found');
-				self.newAuth();
-			}
-		}
-	};
 	
 	this.handleDisconnect = function() {
 		this.clientHandler.disconnect(this);
@@ -42,13 +22,13 @@ function Client(clientHandler, socket) {
 		+ addr2string(socket.handshake.address));
 	this.id = socket.id;
 	this.sock = socket;
-	this.name = "unnamed_user_"+(Math.floor(Math.random()*1000));
+	this.name = "unnamed_"+(Math.floor(Math.random()*10000));
 	this.color = color.genColor();
 	
 	this.sock.on('auth', this.handleAuth);
 	this.sock.on('msg', this.handleMsg);
 	this.sock.on('ren', this.handleRen);
-	this.sock.on('disconnect', this.handleDisconnect);
+	this.sock.on('disconnect', this.clientHandler.disconnect.bind(clientHandler,this));
 }
 
 Client.prototype.send = function(msg) {
@@ -56,7 +36,11 @@ Client.prototype.send = function(msg) {
 };
 
 Client.prototype.handleMsg = function(data) {
-	this.clientHandler.handleMsg(this,data.text);
+	this.clientHandler.receive(this, data.text);
+};
+
+Client.prototype.handleAuth = function(data) {
+	this.clientHandler.auth(this, data.uid,data.secret, data.name);
 };
 
 var reloadAll = function() {

@@ -12,16 +12,6 @@ var name_maxLen = 30;
 //TODO UIDS!
 
 function ClientHandler(settings) {
-	// binds to export functions
-	this.receive = this.receive.bind(this);
-	this.send = this.send.bind(this);
-	this.sendAll = this.sendAll.bind(this);
-	this.disconnect = this.disconnect.bind(this);
-	this.sendUserlist = this.sendUserlist.bind(this);
-	this.rename = this.rename.bind(this);
-	this.getUserByName = this.getUserByName.bind(this);
-	this.welcome = this.welcome.bind(this);
-	
 	this.make = new Make(this.clients);
 	this.clients = [];
 	this.auths = [];
@@ -29,12 +19,27 @@ function ClientHandler(settings) {
 
 ClientHandler.prototype.receive(client,text) {
 	if (text === undefined) {
-		this.send(client, this.make.serverMsg('msg','Invalid Message.'));
+		this.send(client, this.make.serverMsg('msg','Invalid message.'));
 		return;
 	}
+	text = text.trim();
+	// command evaluation
+	if(text[0] === '/') {
+		text = text.substring(1);
+		var alias  = text.match(/(n(ick|ame)?|a(lias)?) (.*)/);
+		if(alias) {
+			this.rename(client,alias[4]);
+			return;
+		}
+		//TODO insert more commands here
+		this.make.serverMsg('msg','Invalid command.')
+		return;
+	}
+	
+	// empty markup
 	if(!marked(text))
 		return false;
-	text = text.trim();
+	
 	var msg = {
 		type: 'msg',
 		uid: client.uid,
@@ -72,14 +77,37 @@ ClientHandler.prototype.sendUserlist = function(client) {
 	func(this.make.userlist());
 }
 
+ClientHandler.prototype.auth = function(client, uid, secret, name) {
+	if(!secret) {
+		this.newAuth(client);
+		return;
+	}
+	client.name = data.name;
+	self.auth = findId(auths,secret); //TODO
+	if(self.auth) {
+		//TODO check if username is valid
+		self.name = data.name;
+		self.auth.name = data.name;
+		self.welcome();
+	} else {
+		console.info('auth '+data.secret.substring(0,7)
+		 + '.. for user '+data.name+' not found');
+		self.newAuth();
+	}
+}
+
 ClientHandler.prototype.newAuth = function(client) {
+	var uid;
+	do {
+		uid = base64id.generateId();
+	} while (!this.auths.hasOwnProperty(uid));
 	var auth = {
-		uid: base64id.generateId(),
-		secret = base64id.generateId(),
+		uid: uid,
+		secret = base64id.generateId()+base64id.generateId(),
 		name: client.name
 	};
 	console.info('user', auth.name, 'gets new auth');
-	this.auths.push(auth);
+	this.auths[uid] = auth;
 	client.auth = auth;
 	this.welcome(client);
 };
