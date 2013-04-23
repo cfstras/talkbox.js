@@ -33,6 +33,8 @@ var unreadmsgusers = [];
 var stopAlert = null;
 var alertInfo = {};
 
+var buf = null;
+
 function initClient() {
 	notificationsSupported = !!window.Notification;
 	if (notificationsSupported) {
@@ -44,7 +46,10 @@ function initClient() {
 		}
 		checkNotificationPerm(perm);
 	}
-	
+	//localstorage
+	if(supportsLocalStorage()) {
+		buf = new Buffer('msgstore',20);//TODO: move to settings
+	}
 	//init marked
 	marked.setOptions({
 		gfm: true,
@@ -90,6 +95,8 @@ function requestNotificationPerm() {
 
 function onMsg(data) {
 	console.log(data);
+	if(buf !== null && !data.server)
+		buf.push(data);
 	addMessage(data);
 	if(windowFocused) {
 		//do nothing
@@ -357,4 +364,7 @@ $(document).ready(function() {
 		stopAlert = null;
 	});
 	//s$('button').click();
+	if(buf !== null && buf.getLength() > 0) {
+		buf.forEach(addMessage);
+	}
 });
