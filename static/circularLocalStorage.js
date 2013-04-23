@@ -85,9 +85,12 @@ function Buffer(name, cap) {
 
 //static
 function supportsLocalStorage() {
-  try {
-    return 'localStorage' in window && window['localStorage'] !== null;
-  } catch (e) {
-    return false;
-  }
+	try {
+		var test = "test";
+		localStorage.setItem(test, test);
+		localStorage.removeItem(test);
+		return true;
+	} catch(e) {
+		return false;
+	}
 }
