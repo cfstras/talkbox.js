@@ -48,7 +48,7 @@ function initClient() {
 	}
 	//localstorage
 	if(supportsLocalStorage()) {
-		buf = new Buffer('msgstore',11);
+		buf = new Buffer('msgstore',20);//TODO: move to settings
 	}
 	//init marked
 	marked.setOptions({
