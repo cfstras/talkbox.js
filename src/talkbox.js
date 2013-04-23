@@ -8,26 +8,27 @@ var connect = require('connect'),
 	repl = require('repl');
 
 var settings = require('./settings'),
-	libClient = require('./client'),
+	ClientHandler = require('./clientHandler');
+	webClient = require('./webClient'),
 	XMPP = require('./xmpp');
 
 io.set('log level', 1);
 app.listen(80);
-
-io.sockets.on('connection', function(socket) {
-	var c = new libClient.Client(socket, settings);
-});
-
-var xmppClient = new XMPP(libClient,settings);
 
 var sh = repl.start("talkbox >");
 sh.context.reloadAll = libClient.reloadAll;
 sh.context.make = libClient.make;
 sh.context.sendAll = libClient.sendAll;
 sh.context.io = io;
-sh.context.clients = libClient.clients;
+sh.context.clients = clientHandler.clients;
 sh.context.auths = libClient.auths;
 sh.context.settings = settings;
 sh.context.XMPP = XMPP;
 sh.context.xmppClient = xmppClient;
+
+
+var clientHandler = new ClientHandler(settings);
+webClient.init(io,clientHandler);
+
+var xmppClient = new XMPP(libClient,settings);
 
