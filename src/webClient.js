@@ -5,7 +5,7 @@ function Client(clientHandler, socket) {
 	this.sock = socket;
 	
 	this.sock.on('auth', this.handleAuth.bind(this));
-	this.sock.on('msg', clientHandler.bind(clientHandler,this));
+	this.sock.on('msg', clientHandler.receive.bind(clientHandler,this));
 	this.sock.on('disconnect', clientHandler.disconnect.bind(clientHandler,this));
 }
 

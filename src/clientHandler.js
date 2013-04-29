@@ -15,7 +15,7 @@ function ClientHandler(settings) {
 	this.auths = [];
 };
 
-ClientHandler.prototype.receive(client,text) {
+ClientHandler.prototype.receive = function(client, text) {
 	if(typeof text === 'object' && typeof text.text === 'string') {
 		text = text.text;
 	} else if(typeof text !== 'string'){
@@ -51,22 +51,22 @@ ClientHandler.prototype.receive(client,text) {
 	this.sendAll(msg);
 }
 
-ClientHandler.prototype.send(client,msg) {
+ClientHandler.prototype.send = function(client,msg) {
 	client.send(msg);
 }
 
-ClientHandler.prototype.sendAll(msg) {
-	for(i in clients) {
-		this.send(clients[i],msg);
+ClientHandler.prototype.sendAll = function(msg) {
+	for(i in this.clients) {
+		this.send(this.clients[i],msg);
 	}
 }
 
-ClientHandler.prototype.disconnect(client) {
-	console.info('disconnected: ',client);
+ClientHandler.prototype.disconnect = function(client) {
+	console.info('disconnected: ', client.name, client.id);
 	var i = this.clients.indexOf(client)
 	if(i != -1) {
-		clients.splice(i,1)
-		sendAll('userleave', {
+		this.clients.splice(i,1)
+		this.sendAll('userleave', {
 			uid: client.uid,
 			name: client.name
 		});
@@ -84,7 +84,7 @@ ClientHandler.prototype.auth = function(client, uid, secret, name) {
 		return;
 	}
 	var auth = this.auth[uid];
-	if(!auth || auth.secret !=== secret) {
+	if(!auth || auth.secret !== secret) {
 		// user secret is invalid!!!
 		//TODO note this in the database
 		console.info('auth '+data.secret.substring(0,7)
@@ -102,12 +102,14 @@ ClientHandler.prototype.auth = function(client, uid, secret, name) {
 
 ClientHandler.prototype.newAuth = function(client) {
 	var uid;
-	do {
+	for (tries=0;
+		tries<10 && (!tries || this.auths.hasOwnProperty(uid));
+		tries++) {
 		uid = base64id.generateId();
-	} while (!this.auths.hasOwnProperty(uid));
+	}
 	var auth = {
 		uid: uid,
-		secret = base64id.generateId()+base64id.generateId(),
+		secret: base64id.generateId()+base64id.generateId(),
 		name: client.name
 	};
 	console.info('user', auth.name, 'gets new auth');
@@ -119,12 +121,12 @@ ClientHandler.prototype.newAuth = function(client) {
 ClientHandler.prototype.rename = function(client, newName) {
 	var newName = this.isNameValid(newName);
 	if(newName === false) {
-		this.send(client, make.serverMsg('msg','This nickname is already taken!'));
+		this.send(client, this.make.serverMsg('msg','This nickname is already taken!'));
 		return;
 	}
 	if(newName === null) {
 		this.send(client,make.serverMsg('Invalid nickname format, allowed symbols: '
-			+ '<pre>'+name_symbols+'</pre>, length '+name_minLen+' - '+name_maxLen);
+			+ '<pre>'+name_symbols+'</pre>, length '+name_minLen+' - '+name_maxLen));
 		return;
 	}
 	var old = client.name;
@@ -132,8 +134,10 @@ ClientHandler.prototype.rename = function(client, newName) {
 	client.name = newName;
 	if(client.auth) {
 		client.auth.name = newName;
-		this.sendAll('ren', make.userToSend(client));
-		this.sendAll(make.serverMsg('msg', old + ' is now known as ' + newName));
+		var renmsg = this.make.userToSend(client);
+		renmsg.type = 'ren';
+		this.sendAll(renmsg);
+		this.sendAll(this.make.serverMsg('msg', old + ' is now known as ' + newName));
 		// if there is no auth object, he isn't logged in
 		// --> no need to inform others
 	}
@@ -149,7 +153,7 @@ ClientHandler.prototype.isNameValid = function(name) {
 	if(!name) {
 		return null;
 	}
-	if(this.getUserByName(newName)) {
+	if(this.getUserByName(name)) {
 		return false;
 	}
 	if(name !== "server" && name_regex.test(name)) {
@@ -161,7 +165,7 @@ ClientHandler.prototype.isNameValid = function(name) {
 ClientHandler.prototype.welcome = function(client) {
 	client.color = color.genColor();
 	if(!client.name) client.name = "unnamed_"+(Math.floor(Math.random()*10000));
-	client.uid = auth.uid;
+	client.uid = client.auth.uid;
 	
 	var join = this.make.userToSend(client)
 	join.type = 'userjoin';
@@ -169,7 +173,7 @@ ClientHandler.prototype.welcome = function(client) {
 	
 	client.auth.login = new Date();
 	this.clients.push(client);
-	console.info('join:',client);
+	console.info('join:',client.name, client.uid);
 	
 	var welcome = this.make.userToSend(client);
 	welcome.secret = client.auth.secret;
@@ -177,7 +181,7 @@ ClientHandler.prototype.welcome = function(client) {
 	welcome.type = 'welcome';
 	this.send(client,welcome);
 	
-	this.send(client, this.serverMsg('msg',
+	this.send(client, this.make.serverMsg('msg',
 		'welcome, ' + client.name + '! To change your nick, use'
 		+ ' /nick thisIsANewNickname'));
 	
@@ -185,9 +189,9 @@ ClientHandler.prototype.welcome = function(client) {
 };
 
 ClientHandler.prototype.getUserByName = function(name) {
-	for(i in clients) {
-		if(clients[i].name === name)
-			return clients[i];
+	for(i in this.clients) {
+		if(this.clients[i].name === name)
+			return this.clients[i];
 	}
 	return null;
 }

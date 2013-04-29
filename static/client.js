@@ -111,16 +111,16 @@ function onMsg(data) {
 }
 
 function onRen(data) {
-	if(data.id === myId) {
+	if(data.uid === myId) {
 		localStorage.setItem('name',data.name);
 		myName = data.name;
 	}
 	addMessage(data.msg);
-	$('#userlist .inner #'+data.id).fadeOut(200, function() {
+	$('#userlist .inner #'+data.uid).fadeOut(200, function() {
 		$(this).text(data.name).fadeIn(100);
 	});
 	
-	var user = findById(userlist,data.id);
+	var user = findById(userlist,data.uid);
 	var index = 0;
 	if((index = unreadmsgusers.indexOf(user.name)) !== -1) {
 		unreadmsgusers[index] = data.name;
@@ -141,7 +141,7 @@ function onErr(data) {
 
 function onUserLeave(user) {
 	console.log('dc: '+user.name);
-	var index = findIndexById(userlist, user.id);
+	var index = findIndexById(userlist, user.uid);
 	if(index != -1) {
 		userlist.splice(index,1);
 	} else {
@@ -161,6 +161,7 @@ function onReload() {
 
 function onConnect() {
 	socket.emit('auth',{
+		uid: localStorage.getItem('uid'),
 		secret: localStorage.getItem('secret'),
 		name: localStorage.getItem('name')
 	});
@@ -170,7 +171,8 @@ function onConnect() {
 function onWelcome(data) {
 	localStorage.setItem('secret',data.secret);
 	localStorage.setItem('name',data.name);
-	myId = data.id;
+	localStorage.setItem('uid', data.uid);
+	myId = data.uid;
 	myName = data.name;
 	closeOverlay('#connect');
 }
@@ -257,7 +259,7 @@ function setUserlist(data) {
 	$('#userlist .inner').fadeIn(50);
 	userlist = data;
 	$('#userlist .inner .user').each(function(i, el) {
-		var user = findById(userlist, el.id);
+		var user = findById(userlist, el.uid);
 		if (user === null) {
 			$(this).animate({
 				opacity: 0
@@ -267,7 +269,7 @@ function setUserlist(data) {
 		}
 	});
 	for(i in userlist) {
-		if ($('#userlist .inner #'+userlist[i].id.replace(/[:\.@]/g,'__'))
+		if ($('#userlist .inner #'+userlist[i].uid.replace(/[:\.@]/g,'__'))
 			.length===0) {
 			makeUserEl(userlist[i])
 			.appendTo('#userlist .inner')
@@ -279,7 +281,7 @@ function setUserlist(data) {
 };
 
 function makeUserEl(user) {
-	return $('<span class="user" id="' + user.id.replace(/[:\.@]/g,'__')
+	return $('<span class="user" id="' + user.uid.replace(/[:\.@]/g,'__')
 		+ '" style="opacity: 0; color:'+user.color+';">'
 		+ user.name + '</span>');
 }
@@ -307,13 +309,7 @@ send = function() {
 	var inp = $('#inputbox');
 	var text = inp.val();
 	inp.val('');
-	var aliasreg = /^\/(alias|name|nick|n|a) (.*)/;
-	var aliasrep = /^\/(alias|name|nick|n|a) /;
-	if(text.match(aliasreg)) {
-		socket.emit('ren', {name: text.replace(aliasrep,'')});
-	} else {
-		socket.emit('msg', {text: text});
-	}
+	socket.emit('msg', {text: text});
 	//inp.prop('disabled',true);
 	//setTimeout(function() {
 	//	inp.prop('disabled',false);

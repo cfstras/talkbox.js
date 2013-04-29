@@ -16,12 +16,7 @@ io.set('log level', 1);
 app.listen(80);
 
 var sh = repl.start("talkbox >");
-sh.context.reloadAll = libClient.reloadAll;
-sh.context.make = libClient.make;
-sh.context.sendAll = libClient.sendAll;
 sh.context.io = io;
-sh.context.clients = clientHandler.clients;
-sh.context.auths = libClient.auths;
 sh.context.settings = settings;
 sh.context.XMPP = XMPP;
 sh.context.xmppClient = xmppClient;
@@ -30,5 +25,11 @@ sh.context.xmppClient = xmppClient;
 var clientHandler = new ClientHandler(settings);
 webClient.init(io,clientHandler);
 
-var xmppClient = new XMPP(libClient,settings);
+sh.context.clients = clientHandler.clients;
+sh.context.auths = clientHandler.auths;
+sh.context.reloadAll = clientHandler.reloadAll.bind(clientHandler);
+sh.context.sendAll = clientHandler.sendAll.bind(clientHandler);
+sh.context.make = clientHandler.make;
+
+var xmppClient = new XMPP(clientHandler,settings);
 

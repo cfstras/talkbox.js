@@ -41,8 +41,9 @@ XMPP.prototype.handleChat = function(from, message) {
 		console.log('xmpp: message from unknown ignored:',from);
 		return;
 	}
-	this.libClient.sendAll('msg',{
+	this.libClient.sendAll({
 		id: client.id,
+		type: 'msg',
 		name: client.name,
 		text: message.trim(),
 		date: new Date()
@@ -79,8 +80,9 @@ XMPP.prototype.handleBuddy = function(jid, state, statusText) {
 		if(state !== lib.STATUS.OFFLINE) {
 			// logged in
 			this.libClient.clients.push(client);
-			this.libClient.sendAll('userjoin',
-				this.libClient.make.userToSend(client));
+			var join = this.libClient.make.userToSend(client);
+			join.type = 'userjoin';
+			this.libClient.sendAll(join);
 			//TODO send 'join' event
 			console.log('xmpp: join',jid,state,statusText);
 		}
@@ -111,9 +113,10 @@ function XMPPClient(parent,jid,alias) {
 	this.color = color.genColor();
 }
 
-XMPPClient.prototype.send = function(type, message) {
+XMPPClient.prototype.send = function(message) {
 	var msgFrom = message.name;
 	var msgText = message.text;
+	var type = message.type;
 	
 	if(type ==='msg') {
 		// nothing to do
