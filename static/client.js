@@ -115,17 +115,21 @@ function onRen(data) {
 		localStorage.setItem('name',data.name);
 		myName = data.name;
 	}
-	addMessage(data.msg);
+
 	$('#userlist .inner #'+data.uid).fadeOut(200, function() {
 		$(this).text(data.name).fadeIn(100);
 	});
 	
-	var user = findById(userlist,data.uid);
-	var index = 0;
-	if((index = unreadmsgusers.indexOf(user.name)) !== -1) {
-		unreadmsgusers[index] = data.name;
+	var user = findById(userlist, data.uid);
+	if(user) {
+		var index = 0;
+		if(user && (index = unreadmsgusers.indexOf(user.name)) !== -1) {
+			unreadmsgusers[index] = data.name;
+		}
+		user.name = data.name;
+	} else {
+		//TODO what now?
 	}
-	user.name = data.name;
 };
 
 function onUserList(data) {

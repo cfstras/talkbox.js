@@ -87,8 +87,8 @@ ClientHandler.prototype.auth = function(client, uid, secret, name) {
 	if(!auth || auth.secret !== secret) {
 		// user secret is invalid!!!
 		//TODO note this in the database
-		console.info('auth '+data.secret.substring(0,7)
-			+ '.. for user '+data.name+' not found / invalid');
+		console.info('auth '+secret.substring(0,7)
+			+ '.. for user '+name+' not found / invalid');
 		this.newAuth(client);
 		return;
 	}

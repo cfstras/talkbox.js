@@ -19,8 +19,6 @@ var sh = repl.start("talkbox >");
 sh.context.io = io;
 sh.context.settings = settings;
 sh.context.XMPP = XMPP;
-sh.context.xmppClient = xmppClient;
-
 
 var clientHandler = new ClientHandler(settings);
 webClient.init(io,clientHandler);
@@ -31,5 +29,7 @@ sh.context.reloadAll = clientHandler.reloadAll.bind(clientHandler);
 sh.context.sendAll = clientHandler.sendAll.bind(clientHandler);
 sh.context.make = clientHandler.make;
 
-var xmppClient = new XMPP(clientHandler,settings);
+//var xmppClient = new XMPP(clientHandler,settings);
+
+//sh.context.xmppClient = xmppClient;
 
