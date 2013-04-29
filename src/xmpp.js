@@ -2,8 +2,8 @@ var base64id = require('base64id'),
 	lib = require('simple-xmpp'),
 	color = require('./color');
 
-function XMPP(libClient, settings) {
-	this.libClient = libClient;
+function XMPP(clientHandler, settings) {
+	this.clientHandler = clientHandler;
 	this.settings = settings.xmpp;
 	lib.on('online', this.handleOnline.bind(this));
 	lib.on('chat', this.handleChat.bind(this));
@@ -41,13 +41,7 @@ XMPP.prototype.handleChat = function(from, message) {
 		console.log('xmpp: message from unknown ignored:',from);
 		return;
 	}
-	this.libClient.sendAll({
-		id: client.id,
-		type: 'msg',
-		name: client.name,
-		text: message.trim(),
-		date: new Date()
-	});
+	this.clientHandler.receive(client,message);
 };
 
 XMPP.prototype.handleError = function(err) {
@@ -73,44 +67,32 @@ XMPP.prototype.handleBuddy = function(jid, state, statusText) {
 	}
 	if(!client) {
 		client = this.clients[jid] = new XMPPClient(
-			this,jid,
-			this.settings.friends[jid].alias);
+			jid, this.settings.friends[jid].alias);
 	}
-	if(this.libClient.clients.indexOf(client) === -1) {
+	if(this.clientHandler.clients.indexOf(client) === -1) {
 		if(state !== lib.STATUS.OFFLINE) {
 			// logged in
-			this.libClient.clients.push(client);
-			var join = this.libClient.make.userToSend(client);
-			join.type = 'userjoin';
-			this.libClient.sendAll(join);
-			//TODO send 'join' event
+			this.clientHandler.addUser(client);
 			console.log('xmpp: join',jid,state,statusText);
 		}
 	} else {
 		if(state === lib.STATUS.OFFLINE) {
 			//logged off
-			var i = this.libClient.clients.indexOf(client)
-			if(i != -1) {
-				this.libClient.clients.splice(i,1)
-				//TODO send 'leave' event
-			} else {
-				// logged off but wasn't logged on.
-			}
-			console.log('xmpp: leave',jid,state,statusText);
+			this.clientHandler.disconnect(client);
 		}
 	}
 	client.status = state;
 	console.info('xmpp: buddy',jid,state,'status:',statusText);
 };
 
-function XMPPClient(parent,jid,alias) {
-	this.parent = parent;
+function XMPPClient(jid, alias) {
 	this.status = lib.OFFLINE;
 	this.name = alias+':xmpp';
 	this.jid = jid;
-	this.id = base64id.generateId();
-	this.send = this.send.bind(this);
+	this.uid = base64id.generateId();
 	this.color = color.genColor();
+	
+	this.send = this.send.bind(this);
 }
 
 XMPPClient.prototype.send = function(message) {
@@ -120,20 +102,10 @@ XMPPClient.prototype.send = function(message) {
 	
 	if(type ==='msg') {
 		// nothing to do
-		if(message.id === this.id) {
+		if(message.uid === this.uid) {
+			// message was sent by me, suppress
 			return;
 		}
-	} else if(type ==='userjoin') { 
-		// nothing to do, xmpp has no userlist
-		return
-	} else if(type ==='ren') { 
-		msgFrom = 'server';
-		msgText = message.msg.text;
-	} else if(type ==='userleave') { 
-		// nothing to do, xmpp has no userlist
-		return
-	} else if(type ==='disconnect') { 
-		// nothing to do
 	} else {
 		console.error('xmpp: unknown message',type,message);
 		return;

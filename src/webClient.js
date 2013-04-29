@@ -14,7 +14,7 @@ Client.prototype.send = function(msg) {
 };
 
 Client.prototype.handleAuth = function(data) {
-	this.clientHandler.auth(this, data.uid,data.secret, data.name);
+	this.clientHandler.auth(this, data.uid, data.secret, data.name);
 };
 
 module.exports.Client = Client;

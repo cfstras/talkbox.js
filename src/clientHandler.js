@@ -62,7 +62,7 @@ ClientHandler.prototype.sendAll = function(msg) {
 }
 
 ClientHandler.prototype.disconnect = function(client) {
-	console.info('disconnected: ', client.name, client.id);
+	console.info('disconn: ', client.name, client.uid);
 	var i = this.clients.indexOf(client)
 	if(i != -1) {
 		this.clients.splice(i,1)
@@ -166,14 +166,9 @@ ClientHandler.prototype.welcome = function(client) {
 	client.color = color.genColor();
 	if(!client.name) client.name = "unnamed_"+(Math.floor(Math.random()*10000));
 	client.uid = client.auth.uid;
-	
-	var join = this.make.userToSend(client)
-	join.type = 'userjoin';
-	this.sendAll(join);
-	
 	client.auth.login = new Date();
-	this.clients.push(client);
-	console.info('join:',client.name, client.uid);
+	
+	this.addUser(client);
 	
 	var welcome = this.make.userToSend(client);
 	welcome.secret = client.auth.secret;
@@ -186,6 +181,15 @@ ClientHandler.prototype.welcome = function(client) {
 		+ ' /nick thisIsANewNickname'));
 	
 	this.sendUserlist(client);
+};
+
+ClientHandler.prototype.addUser = function(client) {
+	var join = this.make.userToSend(client);
+	join.type = 'userjoin';
+	this.sendAll(join);
+	
+	this.clients.push(client);
+	console.info('join:', client.name, client.uid);
 };
 
 ClientHandler.prototype.getUserByName = function(name) {
