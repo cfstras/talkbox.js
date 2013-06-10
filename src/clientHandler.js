@@ -79,6 +79,7 @@ ClientHandler.prototype.sendUserlist = function(client) {
 }
 
 ClientHandler.prototype.auth = function(client, uid, secret, name) {
+	client.name = name;
 	if(!secret || !uid) {
 		this.newAuth(client);
 		return;
@@ -118,14 +119,15 @@ ClientHandler.prototype.newAuth = function(client) {
 	this.welcome(client);
 };
 
-ClientHandler.prototype.rename = function(client, newName) {
-	var newName = this.isNameValid(newName);
+ClientHandler.prototype.rename = function(client, nextName) {
+	var newName = this.isNameValid(nextName);
 	if(newName === false) {
 		this.send(client, this.make.serverMsg('msg','This nickname is already taken!'));
+		console.log('err','invalid new name',newName);
 		return;
 	}
 	if(newName === null) {
-		this.send(client,make.serverMsg('Invalid nickname format, allowed symbols: '
+		this.send(client,this.make.serverMsg('msg','Invalid nickname format, allowed symbols: '
 			+ '<pre>'+name_symbols+'</pre>, length '+name_minLen+' - '+name_maxLen));
 		return;
 	}

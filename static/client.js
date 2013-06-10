@@ -118,6 +118,7 @@ function onMsg(data) {
 }
 
 function onRen(data) {
+	console.log('ren',data);
 	if(data.uid === myId) {
 		localStorage.setItem('name',data.name);
 		myName = data.name;
