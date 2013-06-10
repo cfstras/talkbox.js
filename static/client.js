@@ -60,6 +60,9 @@ function initClient() {
 		smartLists: true,
 		langPrefix: 'lang-'
 	});
+	if(buf !== null && buf.getLength() > 0) {
+		buf.forEach(addMessage.bind(this,true));
+	}
 }
 
 function checkNotificationPerm(perm) {
@@ -97,7 +100,7 @@ function onMsg(data) {
 	console.log(data);
 	if(buf !== null && !data.server)
 		buf.push(data);
-	addMessage(data);
+	addMessage(true,data);
 	if(windowFocused) {
 		//do nothing
 	} else {
@@ -141,6 +144,7 @@ function onRen(data) {
 };
 
 function onUserList(data) {
+	console.log('userlist',data);
 	//TODO check if userlist has a valid format
 	setUserlist(data);
 }
@@ -148,7 +152,7 @@ function onUserList(data) {
 function onErr(data) {
 	data.server = true;
 	data.name = 'server';
-	addMessage(data);
+	addMessage(false,data);
 }
 
 function onUserLeave(user) {
@@ -208,7 +212,7 @@ function onConnectFailed() {
 	setTimeout(connect,1000*60); // sleep 60 seconds, then reconnect
 }
 
-function addMessage(data) {
+function addMessage(instant, data) {
 	var date = new Date(data.date);
 	var user = findById(userlist, data.id);
 	var d = $('<div class="message'
@@ -231,9 +235,13 @@ function addMessage(data) {
 		.each(function() { //put an image in
 			$(this).html('<img src="' + this.href + '" />'); 
 		});
-	$('#msgs').animate({
-		scrollTop: $('#msgs #inner').height()
-	},150);
+	if(instant) {
+		$('#msgs').scrollTop($('#msgs #inner').height());
+	} else {
+		$('#msgs').animate({
+			scrollTop: $('#msgs #inner').height()
+		},150);
+	}
 	if(data.name != myName) {
 		notify(data);
 	}
@@ -364,8 +372,4 @@ $(document).ready(function() {
 		stopAlert && stopAlert();
 		stopAlert = null;
 	});
-	//s$('button').click();
-	if(buf !== null && buf.getLength() > 0) {
-		buf.forEach(addMessage);
-	}
 });

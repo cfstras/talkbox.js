@@ -10,9 +10,9 @@ var name_minLen = 3;
 var name_maxLen = 30;
 
 function ClientHandler(settings) {
-	this.make = new Make(this.clients);
 	this.clients = [];
 	this.auths = [];
+	this.make = new Make(this.clients);
 };
 
 ClientHandler.prototype.receive = function(client, text) {

@@ -19,7 +19,7 @@ function Make(clients) {
 		var list = [];
 		list.type = 'userlist';
 		for(i in self.clients) {
-			list.push(self.userToSend(clients[i]));
+			list.push(self.userToSend(self.clients[i]));
 		}
 		return list;
 	};
