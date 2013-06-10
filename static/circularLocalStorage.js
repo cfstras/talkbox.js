@@ -82,3 +82,15 @@ function Buffer(name, cap) {
 		this.setHead(-1);
 	}
 }
+
+//static
+function supportsLocalStorage() {
+	try {
+		var test = "test";
+		localStorage.setItem(test, test);
+		localStorage.removeItem(test);
+		return true;
+	} catch(e) {
+		return false;
+	}
+}
