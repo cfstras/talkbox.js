@@ -157,11 +157,11 @@ function onErr(data) {
 
 function onUserLeave(user) {
 	console.log('dc: '+user.name);
-	var index = findIndexById(userlist, user.uid);
+	var index = findIndexByUid(userlist, user.uid);
 	if(index != -1) {
 		userlist.splice(index,1);
 	} else {
-		console.info('got userleave: '+user+', but not found in list'+userlist);
+		console.info('got userleave:',user,', but not found in list',userlist);
 	}
 	setUserlist(userlist)
 }

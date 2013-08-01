@@ -9,7 +9,16 @@ findById = function(arr,id) {
 };
 findIndexById = function(arr,id) {
 	for(i in arr) {
-		if(id == arr[i].id) {
+		if(id === arr[i].id) {
+			return i;
+		}
+	}
+	return -1;
+};
+
+findIndexByUid = function(arr,uid) {
+	for(i in arr) {
+		if(uid === arr[i].uid) {
 			return i;
 		}
 	}
