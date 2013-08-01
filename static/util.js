@@ -1,19 +1,11 @@
 
-findById = function(arr,id) {
+findByUid = function(arr,uid) {
 	for(i in arr) {
-		if(id == arr[i].id) {
+		if(uid == arr[i].uid) {
 			return arr[i];
 		}
 	}
 	return null;
-};
-findIndexById = function(arr,id) {
-	for(i in arr) {
-		if(id === arr[i].id) {
-			return i;
-		}
-	}
-	return -1;
 };
 
 findIndexByUid = function(arr,uid) {
