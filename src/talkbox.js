@@ -13,7 +13,7 @@ var settings = require('./settings'),
 	XMPP = require('./xmpp');
 
 io.set('log level', 1);
-app.listen(80);
+app.listen(settings.site.port);
 
 var sh = repl.start("talkbox >");
 sh.context.io = io;

@@ -1,6 +1,7 @@
 {
   "site": {
     "title": "talkbox",
+    "port": 3000,
     "colors": 0.5,
     "oEmbed": true,
     "style": "client.css"
