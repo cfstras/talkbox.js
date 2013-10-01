@@ -66,7 +66,8 @@ ClientHandler.prototype.disconnect = function(client) {
 	var i = this.clients.indexOf(client)
 	if(i != -1) {
 		this.clients.splice(i,1)
-		this.sendAll('userleave', {
+		this.sendAll({
+			type: 'userleave',
 			uid: client.uid,
 			name: client.name
 		});

@@ -131,7 +131,7 @@ function onRen(data) {
 		$(this).text(data.name).fadeIn(100);
 	});
 	
-	var user = findById(userlist, data.uid);
+	var user = findByUid(userlist, data.uid);
 	if(user) {
 		var index = 0;
 		if(user && (index = unreadmsgusers.indexOf(user.name)) !== -1) {
@@ -157,11 +157,11 @@ function onErr(data) {
 
 function onUserLeave(user) {
 	console.log('dc: '+user.name);
-	var index = findIndexById(userlist, user.uid);
+	var index = findIndexByUid(userlist, user.uid);
 	if(index != -1) {
 		userlist.splice(index,1);
 	} else {
-		console.info('got userleave: '+user+', but not found in list'+userlist);
+		console.info('got userleave:',user,', but not found in list',userlist);
 	}
 	setUserlist(userlist)
 }
@@ -214,7 +214,7 @@ function onConnectFailed() {
 
 function addMessage(instant, data) {
 	var date = new Date(data.date);
-	var user = findById(userlist, data.id);
+	var user = findByUid(userlist, data.uid);
 	var d = $('<div class="message'
 		+ '" style="opacity: 0;">'
 		+ '<span class="right">' + date.toLocaleTimeString() + '</span>'
@@ -279,7 +279,7 @@ function setUserlist(data) {
 	$('#userlist .inner').fadeIn(50);
 	userlist = data;
 	$('#userlist .inner .user').each(function(i, el) {
-		var user = findById(userlist, el.uid);
+		var user = findByUid(userlist, el.uid);
 		if (user === null) {
 			$(this).animate({
 				opacity: 0
