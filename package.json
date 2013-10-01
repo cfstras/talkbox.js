@@ -52,12 +52,12 @@
 	],
 	"main": "src/talkbox.js",
 	"dependencies": {
-		"socket.io": "0.9.14",
-		"connect": "2.7.6 ",
-		"base64id": "0.1.0",
+		"socket.io": ">=0.9.16",
+		"connect": ">=2.9.0 ",
+		"base64id": ">=0.1.0",
 		"simple-xmpp": "0.1.9",
-		"validator": "1.0.0",
-		"marked": "0.2.8"
+		"validator": ">=1.5.1",
+		"marked": ">=0.2.9"
 	},
 	"scripts": {"start": "node src/talkbox.js"}
 }

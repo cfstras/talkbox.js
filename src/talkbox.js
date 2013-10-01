@@ -3,7 +3,7 @@ var connect = require('connect'),
 	app = http.createServer(connect().use(connect.static(
 		__dirname+'/../static',
 		{redirect: true, maxAge: 1000}))),
-	io = require('socket.io').listen(app),
+	socketio = require('socket.io'),
 	fs = require('fs'),
 	repl = require('repl');
 
@@ -12,8 +12,9 @@ var settings = require('./settings'),
 	webClient = require('./webClient'),
 	XMPP = require('./xmpp');
 
-io.set('log level', 1);
 app.listen(settings.site.port);
+var io = socketio.listen(app);
+io.set('log level', 1);
 
 var sh = repl.start("talkbox >");
 sh.context.io = io;
